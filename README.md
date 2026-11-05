@@ -72,10 +72,19 @@ python converter_cli.py input.docx output.docx --direction uni2win
 # ၃။ Text (.txt) ဖိုင်များ ပြောင်းရန်
 python converter_cli.py input.txt output.txt --direction win2uni
 python converter_cli.py input.txt output.txt --direction uni2win
-
-# ၄။ ဂဏန်းစနစ် ရွေးချယ်၍ ပြောင်းရန် (myanmar: ၀-၉, latin: 0-9, auto)
-python converter_cli.py input.docx output.docx --direction win2uni --number-mode myanmar
 ```
+
+---
+
+### နည်းလမ်း (၄) - Vercel ပေါ်တွင် Live Web App အဖြစ် အခမဲ့ တင်ထားအသုံးပြုခြင်း
+GitHub Repository ကို Vercel နှင့် ချိတ်ဆက်ပြီး ကမ္ဘာတစ်ဝှမ်း မည်သည့်ဖုန်း/ကွန်ပျူတာမှမဆို တိုက်ရိုက် သုံးနိုင်သော Web App (ဥပမာ - `https://unitowinfonts.vercel.app`) ပြုလုပ်နိုင်ပါသည်:
+
+1. [https://vercel.com](https://vercel.com) သို့ သွားပြီး မိမိ၏ **GitHub အကောင့်ဖြင့် Log in** ဝင်ပါ။
+2. **"Add New..." ➔ "Project"** ကို နှိပ်ပါ။
+3. GitHub Repositories စာရင်းထဲမှ **`uzinlay85/unitowinfonts`** ကို ရွေးပြီး **"Import"** နှိပ်ပါ။
+4. Framework Preset နေရာတွင် **"Other"** (Default အတိုင်း) ထား၍ **"Deploy"** ခလုတ်ကို နှိပ်ပါ။
+5. စက္ကန့်ပိုင်းအတွင်း (၁၀ စက္ကန့်ခန့်) တည်ဆောက်ပြီးစီးသွားမည်ဖြစ်ပြီး `https://your-project.vercel.app` လိပ်စာဖြင့် ကမ္ဘာတစ်ဝှမ်း အခမဲ့ တိုက်ရိုက် စတင်အသုံးပြုနိုင်ပါပြီ။
+6. နောင်အခါ GitHub ပေါ်သို့ Code အသစ်များ Push လုပ်လိုက်တိုင်း Vercel က အလိုအလျောက် Update ပြုလုပ်ပေးသွားမည် ဖြစ်ပါသည်။
 
 ---
 

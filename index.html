@@ -781,6 +781,7 @@
     </footer>
 
     <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
     <script src="tlsMyanmarConverter.js"></script>
     <script src="tlsMyanmarConverterData.js"></script>
     <script src="english_dict.js"></script>
@@ -1286,6 +1287,23 @@
                         alert('Error: ' + (err.error || 'Failed to convert docx'));
                     }
                 } catch (err) {
+                    // Fallback to client-side extraction (Works on Vercel & static hosting)
+                    if (typeof mammoth !== 'undefined') {
+                        const reader = new FileReader();
+                        reader.onload = function(e) {
+                            mammoth.extractRawText({ arrayBuffer: e.target.result })
+                                .then(function(result) {
+                                    txtInput.value = result.value;
+                                    performConversion();
+                                    showToast(`${file.name} ထဲမှ စာသားကို အောင်မြင်စွာ ဖတ်ယူပြောင်းလဲလိုက်ပါပြီ!`);
+                                })
+                                .catch(function(mErr) {
+                                    alert('Word ဖိုင် ဖတ်ယူရာတွင် အမှားဖြစ်ပွားပါသည်: ' + mErr.message);
+                                });
+                        };
+                        reader.readAsArrayBuffer(file);
+                        return;
+                    }
                     alert('Word ဖိုင်ကို ပြောင်းရန် Flask ဆာဗာ (app.py) အား run ထားရန် လိုအပ်ပါသည်။ ကျေးဇူးပြု၍ start_converter.bat ကို ဖွင့်ပါ။');
                 }
             } else {

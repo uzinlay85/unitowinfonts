@@ -1,0 +1,1303 @@
+<!DOCTYPE html>
+<html lang="my">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Win Researcher ⇄ Pyidaungsu (Myanmar Font Converter)</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Pyidaungsu:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        @font-face {
+            font-family: 'Win Researcher';
+            src: url('fonts/WINRESEAR.TTF') format('truetype');
+            font-weight: normal;
+            font-style: normal;
+        }
+        @font-face {
+            font-family: 'Pyidaungsu';
+            src: url('fonts/Pyidaungsu-Regular.ttf') format('truetype');
+            font-weight: normal;
+            font-style: normal;
+        }
+
+        :root {
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
+            --primary-light: #eff6ff;
+            --secondary: #059669;
+            --secondary-hover: #047857;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --border: #e2e8f0;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --tag-eng-bg: #dbeafe;
+            --tag-eng-text: #1e40af;
+            --tag-mm-bg: #fef3c7;
+            --tag-mm-text: #92400e;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', 'Pyidaungsu', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            line-height: 1.6;
+        }
+
+        header {
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            color: #ffffff;
+            padding: 1.5rem 2rem;
+            box-shadow: var(--shadow-md);
+        }
+
+        .header-content {
+            max-width: 1300px;
+            margin: 0 auto;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .title-group h1 {
+            font-size: 1.6rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+
+        .badge-pro {
+            font-size: 0.75rem;
+            background: #3b82f6;
+            color: #fff;
+            padding: 0.2rem 0.5rem;
+            border-radius: 9999px;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+        }
+
+        .title-group p {
+            font-size: 0.9rem;
+            color: #94a3b8;
+            margin-top: 0.25rem;
+        }
+
+        .direction-switch-container {
+            display: flex;
+            align-items: center;
+            background: #1e293b;
+            border: 1px solid #334155;
+            padding: 0.35rem;
+            border-radius: 12px;
+            gap: 0.5rem;
+        }
+
+        .font-badge {
+            padding: 0.4rem 0.9rem;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+
+        .font-badge.active-source {
+            background: #3b82f6;
+            color: white;
+            box-shadow: 0 0 12px rgba(59, 130, 246, 0.4);
+        }
+
+        .font-badge.active-target {
+            background: #10b981;
+            color: white;
+            box-shadow: 0 0 12px rgba(16, 185, 129, 0.4);
+        }
+
+        .swap-btn {
+            background: #334155;
+            color: white;
+            border: none;
+            cursor: pointer;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            transition: all 0.25s ease;
+        }
+
+        .swap-btn:hover {
+            background: #475569;
+            transform: rotate(180deg) scale(1.08);
+        }
+
+        main {
+            max-width: 1300px;
+            width: 100%;
+            margin: 1.5rem auto;
+            padding: 0 1.5rem;
+            flex: 1;
+        }
+
+        /* Options Toolbar */
+        .toolbar {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 0.9rem 1.25rem;
+            margin-bottom: 1.25rem;
+            box-shadow: var(--shadow-sm);
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+        }
+
+        .toolbar-group {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 1.2rem;
+        }
+
+        .custom-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--text-main);
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .custom-checkbox input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--primary);
+            cursor: pointer;
+        }
+
+        .select-group {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+            color: var(--text-muted);
+        }
+
+        .select-group select {
+            padding: 0.35rem 0.65rem;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            background: var(--bg);
+            font-size: 0.85rem;
+            outline: none;
+            color: var(--text-main);
+        }
+
+        .btn-tag {
+            background: #f1f5f9;
+            border: 1px solid #cbd5e1;
+            padding: 0.35rem 0.75rem;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #334155;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+            transition: all 0.15s ease;
+        }
+
+        .btn-tag:hover {
+            background: #e2e8f0;
+            color: #0f172a;
+        }
+
+        .sample-pills {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .pill-btn {
+            background: #e0f2fe;
+            color: #0369a1;
+            border: 1px solid #bae6fd;
+            padding: 0.25rem 0.55rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .pill-btn:hover {
+            background: #bae6fd;
+            color: #0284c7;
+        }
+
+        /* Editor Grid */
+        .editor-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.25rem;
+        }
+
+        @media (max-width: 900px) {
+            .editor-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .editor-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            box-shadow: var(--shadow-sm);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            transition: border-color 0.2s;
+        }
+
+        .editor-card:focus-within {
+            border-color: #93c5fd;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+        }
+
+        .card-header {
+            padding: 0.75rem 1.25rem;
+            background: #f8fafc;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .card-title-group {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+
+        .card-title {
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: var(--text-main);
+        }
+
+        .font-type-pill {
+            font-size: 0.7rem;
+            padding: 0.15rem 0.45rem;
+            border-radius: 4px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .pill-legacy {
+            background: #fef3c7;
+            color: #92400e;
+            border: 1px solid #fde68a;
+        }
+
+        .pill-unicode {
+            background: #d1fae5;
+            color: #065f46;
+            border: 1px solid #a7f3d0;
+        }
+
+        .card-actions {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .icon-btn {
+            background: transparent;
+            border: 1px solid transparent;
+            padding: 0.3rem 0.55rem;
+            border-radius: 6px;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+            transition: all 0.15s ease;
+        }
+
+        .icon-btn:hover {
+            background: #f1f5f9;
+            color: var(--text-main);
+            border-color: var(--border);
+        }
+
+        .editor-textarea {
+            width: 100%;
+            height: 240px;
+            padding: 1rem 1.25rem;
+            border: none;
+            outline: none;
+            resize: vertical;
+            font-size: 1.05rem;
+            line-height: 1.7;
+            color: var(--text-main);
+            background: transparent;
+        }
+
+        /* Specific font classes */
+        .font-win-researcher {
+            font-family: 'Win Researcher', 'WinInnwa', sans-serif !important;
+            letter-spacing: 0px;
+        }
+
+        .font-pyidaungsu {
+            font-family: 'Pyidaungsu', sans-serif !important;
+            letter-spacing: 0px;
+        }
+
+        /* Dual Font Real Visual Preview Box */
+        .preview-box {
+            padding: 1rem 1.25rem;
+            min-height: 120px;
+            background: #fcfcfd;
+            border-top: 1px dashed var(--border);
+            font-size: 1.05rem;
+            line-height: 1.8;
+            overflow-wrap: break-word;
+            word-break: break-word;
+        }
+
+        .preview-label {
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .card-footer {
+            padding: 0.5rem 1.25rem;
+            background: #f8fafc;
+            border-top: 1px solid var(--border);
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* English Token Badges Panel */
+        .english-inspector-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1rem 1.25rem;
+            margin-top: 1.25rem;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .inspector-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 0.75rem;
+        }
+
+        .inspector-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .detected-badge-count {
+            background: #dbeafe;
+            color: #1e40af;
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 0.15rem 0.5rem;
+            border-radius: 9999px;
+        }
+
+        .token-pills-wrap {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            max-height: 140px;
+            overflow-y: auto;
+            padding: 0.25rem 0;
+        }
+
+        .token-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            padding: 0.25rem 0.65rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            user-select: none;
+            border: 1px solid transparent;
+        }
+
+        .token-pill.is-english {
+            background: #dbeafe;
+            color: #1e40af;
+            border-color: #bfdbfe;
+        }
+
+        .token-pill.is-english:hover {
+            background: #bfdbfe;
+        }
+
+        .token-pill.is-myanmar {
+            background: #f1f5f9;
+            color: #475569;
+            border-color: #cbd5e1;
+        }
+
+        .token-pill.is-myanmar:hover {
+            background: #e2e8f0;
+        }
+
+        .token-pill .pill-tag {
+            font-size: 0.65rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            padding: 0.05rem 0.3rem;
+            border-radius: 4px;
+            background: rgba(255, 255, 255, 0.6);
+        }
+
+        /* File Upload Box */
+        .file-box {
+            background: var(--card-bg);
+            border: 2px dashed #cbd5e1;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-top: 1.25rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .file-box:hover, .file-box.dragover {
+            border-color: var(--primary);
+            background: #eff6ff;
+        }
+
+        .file-box-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .file-box-icon {
+            font-size: 2rem;
+            color: #3b82f6;
+        }
+
+        .file-box-title {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--text-main);
+        }
+
+        .file-box-desc {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        /* Action Buttons on Output */
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.4rem 0.85rem;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            transition: background 0.15s ease;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-hover);
+        }
+
+        .btn-secondary {
+            background: #f1f5f9;
+            color: #1e293b;
+            border: 1px solid #cbd5e1;
+            padding: 0.4rem 0.85rem;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            transition: all 0.15s ease;
+        }
+
+        .btn-secondary:hover {
+            background: #e2e8f0;
+            color: #0f172a;
+        }
+
+        /* Toast notification */
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: #0f172a;
+            color: white;
+            padding: 0.75rem 1.25rem;
+            border-radius: 8px;
+            box-shadow: var(--shadow-lg);
+            font-size: 0.875rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            z-index: 9999;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            pointer-events: none;
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        /* Highlight classes in preview */
+        .hl-eng {
+            background: rgba(59, 130, 246, 0.12);
+            color: #1d4ed8;
+            padding: 0.1rem 0.25rem;
+            border-radius: 4px;
+            font-family: 'Inter', sans-serif !important;
+        }
+
+        footer {
+            margin-top: auto;
+            background: #f1f5f9;
+            border-top: 1px solid var(--border);
+            padding: 1.25rem 2rem;
+            text-align: center;
+            font-size: 0.825rem;
+            color: var(--text-muted);
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="header-content">
+            <div class="title-group">
+                <h1>
+                    <span>မြန်မာဖောင့် အပြန်အလှန်ပြောင်းစနစ်</span>
+                    <span class="badge-pro">PRO</span>
+                </h1>
+                <p>Win Researcher (TrueType) ⇄ Pyidaungsu (OpenType Unicode) • အင်္ဂလိပ်စာ အထူးထိန်းသိမ်းမှုစနစ်</p>
+            </div>
+
+            <!-- Direction Switcher -->
+            <div class="direction-switch-container">
+                <span id="badgeSource" class="font-badge active-source">Win Researcher</span>
+                <button id="btnSwapDirection" class="swap-btn" title="အပြန်အလှန် ပြောင်းလဲမည် (Swap Direction)">⇄</button>
+                <span id="badgeTarget" class="font-badge active-target">Pyidaungsu (Unicode)</span>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <!-- Toolbar Options -->
+        <div class="toolbar">
+            <div class="toolbar-group">
+                <label class="custom-checkbox" title="စာသားထဲရှိ English စာလုံးများ၊ နာမည်များ၊ အီးမေးလ်၊ ဖုန်းနံပါတ်များကို ပျက်စီးမသွားစေဘဲ သီးသန့် အလိုအလျောက် ထိန်းသိမ်းပေးမည့် စနစ်">
+                    <input type="checkbox" id="chkAutoEnglish" checked>
+                    <span>အင်္ဂလိပ်စာလုံးများ အလိုအလျောက် ထိန်းသိမ်းမည်</span>
+                </label>
+
+                <label class="custom-checkbox" title="မြန်မာစာသားတွင် ပါလာသော ကော်မာ (,) ကို 'ယ' အဖြစ် မမှားစေဘဲ မြန်မာပုဒ်ဖြတ် (၊) အဖြစ် အလိုအလျောက် ပြောင်းပေးမည့်စနစ်">
+                    <input type="checkbox" id="chkSmartPunctuation" checked>
+                    <span>ကော်မာ (,) ➔ မြန်မာပုဒ်ဖြတ် (၊) ပြောင်းမည်</span>
+                </label>
+
+                <div class="select-group">
+                    <label for="selNumberMode">ဂဏန်းစနစ်:</label>
+                    <select id="selNumberMode">
+                        <option value="auto">Auto (English ထဲတွင် 0-9၊ မြန်မာထဲတွင် ၀-၉)</option>
+                        <option value="myanmar">မြန်မာဂဏန်း (၀၁၂၃၄၅၆၇၈၉)</option>
+                        <option value="latin">အင်္ဂလိပ်ဂဏန်း (0123456789)</option>
+                    </select>
+                </div>
+
+                <button id="btnWrapTag" class="btn-tag" title="စာသားကို [en]...[/en] ဖြင့် အုပ်၍ အင်္ဂလိပ်စာအဖြစ် အသေအချာ သတ်မှတ်ပါ">
+                    <span>🏷️ [en] Tag ထည့်ရန်</span>
+                </button>
+            </div>
+
+            <div class="sample-pills">
+                <span>နမူနာများ:</span>
+                <button class="pill-btn" id="btnSampleMixed">အင်္ဂလိပ် + မြန်မာ ရောနှောစာ</button>
+                <button class="pill-btn" id="btnSampleWin">Win Researcher နမူနာ</button>
+                <button class="pill-btn" id="btnSampleUni">ယူနီကုဒ် နမူနာ</button>
+                <button class="pill-btn" id="btnSampleBenchmark" title="ဗျည်းတွဲစုံနှင့် အသတ်စုံ ပါဝင်သော စာပိုဒ်">မြန်မာစာစနစ်စုံ စာပိုဒ် (Pangram)</button>
+            </div>
+        </div>
+
+        <!-- Main Editor Grid -->
+        <div class="editor-grid">
+            <!-- Left Card: Input -->
+            <div class="editor-card">
+                <div class="card-header">
+                    <div class="card-title-group">
+                        <span class="card-title" id="lblInputTitle">မူရင်းစာသား (Input)</span>
+                        <span class="font-type-pill pill-legacy" id="lblInputBadge">Win Researcher</span>
+                    </div>
+                    <div class="card-actions">
+                        <button class="icon-btn" id="btnPaste" title="ကလစ်ဘုတ်မှ ကူးထည့်မည်">📋 Paste</button>
+                        <button class="icon-btn" id="btnClear" title="စာလုံးများ အကုန်ဖျက်မည်">🗑️ Clear</button>
+                    </div>
+                </div>
+
+                <textarea id="txtInput" class="editor-textarea font-win-researcher" placeholder="ဤနေရာတွင် Win Researcher ဖောင့်ဖြင့် ရေးထားသော စာသားကို ရိုက်ထည့်ပါ သို့မဟုတ် ကူးထည့်ပါ..."></textarea>
+
+                <div class="card-footer">
+                    <span id="lblInputStats">စာလုံးရေ: 0 • စကားလုံး: 0</span>
+                    <span style="font-size:0.75rem; color:#64748b;">ရိုက်ထည့်သည်နှင့် ချက်ချင်းပြောင်းပေးပါသည်</span>
+                </div>
+            </div>
+
+            <!-- Right Card: Output -->
+            <div class="editor-card">
+                <div class="card-header">
+                    <div class="card-title-group">
+                        <span class="card-title" id="lblOutputTitle">ပြောင်းလဲပြီး စာသား (Output)</span>
+                        <span class="font-type-pill pill-unicode" id="lblOutputBadge">Pyidaungsu (Unicode)</span>
+                    </div>
+                    <div class="card-actions">
+                        <button class="btn-secondary" id="btnCopyWord" title="Microsoft Word ထဲတွင် အင်္ဂလိပ်စာနှင့် မြန်မာစာ ဖောင့်မပျက်ဘဲ ကပ်နိုင်စေရန် ကူးယူမည်">📄 Word ပုံစံ Copy</button>
+                        <button class="btn-primary" id="btnCopyText" title="စာသား သီးသန့် ကူးယူမည်">📋 Copy</button>
+                    </div>
+                </div>
+
+                <textarea id="txtOutput" class="editor-textarea font-pyidaungsu" readonly placeholder="ပြောင်းလဲပြီး ရလဒ် ဤနေရာတွင် ပေါ်လာပါမည်..."></textarea>
+
+                <!-- Real Visual Preview using actual @font-face -->
+                <div class="preview-box">
+                    <div class="preview-label">
+                        <span>👁️ အစစ်အမှန် ဖောင့်ပုံစံ အစမ်းမြင်ကွင်း (Real Font Preview)</span>
+                    </div>
+                    <div id="previewContainer" class="font-pyidaungsu" style="min-height: 50px;">
+                        <em>(စာသား ရိုက်ထည့်ပါက ဖောင့်အစစ်ဖြင့် ပြသပေးပါမည်)</em>
+                    </div>
+                </div>
+
+                <div class="card-footer">
+                    <span id="lblOutputStats">စာလုံးရေ: 0 • အင်္ဂလိပ်စကားလုံး: 0</span>
+                    <div style="display:flex; gap:0.4rem;">
+                        <button class="btn-secondary" id="btnDownloadTxt" style="padding:0.25rem 0.6rem; font-size:0.75rem;">💾 .txt သိမ်းမည်</button>
+                        <button class="btn-secondary" id="btnDownloadDocx" style="padding:0.25rem 0.6rem; font-size:0.75rem;">📘 .docx သိမ်းမည်</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Detected English Words Panel -->
+        <div class="english-inspector-card" id="englishInspector">
+            <div class="inspector-header">
+                <div class="inspector-title">
+                    <span>🔍 တွေ့ရှိသော အင်္ဂလိပ်စာလုံးများ (Detected English Words)</span>
+                    <span class="detected-badge-count" id="lblEnglishCount">0 ခု</span>
+                </div>
+                <span style="font-size:0.8rem; color:var(--text-muted);">
+                    (စာလုံးတစ်လုံးချင်းစီကို နှိပ်၍ English ↔ မြန်မာစာ အဖြစ် ချက်ချင်း ပြောင်းလဲနိုင်ပါသည်)
+                </span>
+            </div>
+            <div class="token-pills-wrap" id="tokenPillsContainer">
+                <span style="font-size:0.825rem; color:#94a3b8;">အင်္ဂလိပ်စာလုံး မတွေ့ရှိသေးပါ</span>
+            </div>
+        </div>
+
+        <!-- Word Document (.docx) & File Batch Converter Area -->
+        <div class="file-box" id="fileDropZone">
+            <input type="file" id="fileInput" accept=".docx,.txt" style="display:none;">
+            <div class="file-box-content">
+                <div class="file-box-icon">📁</div>
+                <div class="file-box-title">Word Document (.docx) သို့မဟုတ် Text ဖိုင်ကို ဖောင့်ပြောင်းရန် ဤနေရာသို့ ဆွဲထည့်ပါ</div>
+                <div class="file-box-desc">Microsoft Word ဖိုင်များထဲရှိ Table, Bold, Italic များနှင့် အင်္ဂလိပ်စာလုံးများကို မူရင်းပုံစံအတိုင်း ထိန်းသိမ်း၍ ပြောင်းပေးပါသည် (နှိပ်၍ ဖိုင်ရွေးနိုင်ပါသည်)</div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast">
+        <span id="toastIcon">✓</span>
+        <span id="toastMsg">စာသားကို ကလစ်ဘုတ်သို့ ကူးယူပြီးပါပြီ!</span>
+    </div>
+
+    <footer>
+        <p>Win Researcher (TrueType) ⇄ Pyidaungsu (OpenType) Myanmar Font Converter • Powered by Antigravity & ThanLwinSoft</p>
+        <p style="margin-top:0.25rem; font-size:0.75rem;">Offline Ready: အင်တာနက်မရှိဘဲ မိမိကွန်ပျူတာပေါ်တွင် တိုက်ရိုက် အသုံးပြုနိုင်ပါသည်။</p>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="tlsMyanmarConverter.js"></script>
+    <script src="tlsMyanmarConverterData.js"></script>
+    <script src="english_dict.js"></script>
+    <script src="converter_engine.js"></script>
+
+    <script>
+        // State
+        let currentDirection = 'win2uni'; // 'win2uni' or 'uni2win'
+        let manualOverrides = {
+            english: new Set(),
+            myanmar: new Set()
+        };
+        let lastConversionResult = null;
+
+        // Elements
+        const btnSwap = document.getElementById('btnSwapDirection');
+        const badgeSource = document.getElementById('badgeSource');
+        const badgeTarget = document.getElementById('badgeTarget');
+        const lblInputTitle = document.getElementById('lblInputTitle');
+        const lblInputBadge = document.getElementById('lblInputBadge');
+        const lblOutputTitle = document.getElementById('lblOutputTitle');
+        const lblOutputBadge = document.getElementById('lblOutputBadge');
+        const txtInput = document.getElementById('txtInput');
+        const txtOutput = document.getElementById('txtOutput');
+        const previewContainer = document.getElementById('previewContainer');
+        const chkAutoEnglish = document.getElementById('chkAutoEnglish');
+        const chkSmartPunctuation = document.getElementById('chkSmartPunctuation');
+        const selNumberMode = document.getElementById('selNumberMode');
+        const btnWrapTag = document.getElementById('btnWrapTag');
+        const btnPaste = document.getElementById('btnPaste');
+        const btnClear = document.getElementById('btnClear');
+        const btnCopyText = document.getElementById('btnCopyText');
+        const btnCopyWord = document.getElementById('btnCopyWord');
+        const btnDownloadTxt = document.getElementById('btnDownloadTxt');
+        const btnDownloadDocx = document.getElementById('btnDownloadDocx');
+        const lblInputStats = document.getElementById('lblInputStats');
+        const lblOutputStats = document.getElementById('lblOutputStats');
+        const lblEnglishCount = document.getElementById('lblEnglishCount');
+        const tokenPillsContainer = document.getElementById('tokenPillsContainer');
+        const toast = document.getElementById('toast');
+        const toastMsg = document.getElementById('toastMsg');
+        const fileDropZone = document.getElementById('fileDropZone');
+        const fileInput = document.getElementById('fileInput');
+
+        // Sample Texts
+        const SAMPLES = {
+            mixed_win: 'jrefrmpm onf vGefpGm pdwf0ifpm;zG,f aumif;onf/ English Language ESifh Computer Science udkvnf; avhvmEdkifonf/ Contact: info@example.com Phone: 09-123456789. PDF file download &ef www.test.com odkY oGm;yg/',
+            win_pure: 'jrefrmEdkifiHonf trsKd;om;a&; taxmuftulrsm;jzifh zGH@NzdK;wdk;wufvmonf/ ausmif;om;rsm;tm;vHk; pmtkyfrsm;udk zwf½IavhvmMu&ef jzpfygonf/',
+            uni_sample: 'မြန်မာနိုင်ငံသည် စာပေယဉ်ကျေးမှု ထွန်းကားသော နိုင်ငံဖြစ်ပါသည်။ English စာအုပ်များနှင့် Computer နည်းပညာများကိုလည်း လေ့လာသင်ယူနိုင်ပါသည်။ ဖုန်းနံပါတ် 09-12345678 သို့ ဆက်သွယ်မေးမြန်းနိုင်ပါသည်။',
+            benchmark_uni: 'သီဟိုဠ်မှ ဉာဏ်ကြီးရှင် ဖြိုးသူသည် အာယုဝဍ္ဎန ဆေးညွှန်းစာတွက် ချွတ်ချော်မှုမရှိစေဘဲ ငှက်ဖျားရောဂါ၊ အဆိပ်သင့် လေဖြတ်ခြင်းနှင့် လျှာကျဉ်းနာတို့ကို ကြိုးစားကုသရာ အံ့ဩဖွယ် ချက်ချင်း သက်သာပျောက်ကင်းလေ၏။'
+        };
+
+        function showToast(message) {
+            toastMsg.textContent = message;
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 2500);
+        }
+
+        // Direction Switch
+        function setDirection(dir) {
+            currentDirection = dir;
+            manualOverrides.english.clear();
+            manualOverrides.myanmar.clear();
+
+            if (currentDirection === 'win2uni') {
+                badgeSource.textContent = 'Win Researcher';
+                badgeSource.className = 'font-badge active-source';
+                badgeTarget.textContent = 'Pyidaungsu (Unicode)';
+                badgeTarget.className = 'font-badge active-target';
+
+                lblInputTitle.textContent = 'Win Researcher စာသား (Input)';
+                lblInputBadge.textContent = 'Win Researcher';
+                lblInputBadge.className = 'font-type-pill pill-legacy';
+
+                lblOutputTitle.textContent = 'Pyidaungsu ယူနီကုဒ် (Output)';
+                lblOutputBadge.textContent = 'Pyidaungsu (Unicode)';
+                lblOutputBadge.className = 'font-type-pill pill-unicode';
+
+                txtInput.className = 'editor-textarea font-win-researcher';
+                txtInput.placeholder = 'ဤနေရာတွင် Win Researcher ဖောင့်ဖြင့် ရေးထားသော စာသားကို ရိုက်ထည့်ပါ...';
+                txtOutput.className = 'editor-textarea font-pyidaungsu';
+                previewContainer.className = 'font-pyidaungsu';
+            } else {
+                badgeSource.textContent = 'Pyidaungsu (Unicode)';
+                badgeSource.className = 'font-badge active-target';
+                badgeTarget.textContent = 'Win Researcher';
+                badgeTarget.className = 'font-badge active-source';
+
+                lblInputTitle.textContent = 'Pyidaungsu ယူနီကုဒ် စာသား (Input)';
+                lblInputBadge.textContent = 'Pyidaungsu (Unicode)';
+                lblInputBadge.className = 'font-type-pill pill-unicode';
+
+                lblOutputTitle.textContent = 'Win Researcher ရလဒ် (Output)';
+                lblOutputBadge.textContent = 'Win Researcher';
+                lblOutputBadge.className = 'font-type-pill pill-legacy';
+
+                txtInput.className = 'editor-textarea font-pyidaungsu';
+                txtInput.placeholder = 'ဤနေရာတွင် Pyidaungsu ယူနီကုဒ်ဖြင့် ရေးထားသော စာသားကို ရိုက်ထည့်ပါ...';
+                txtOutput.className = 'editor-textarea font-win-researcher';
+                previewContainer.className = 'font-win-researcher';
+            }
+
+            // Swap text contents
+            const prevOutput = txtOutput.value;
+            if (prevOutput) {
+                txtInput.value = prevOutput;
+            }
+            performConversion();
+        }
+
+        btnSwap.addEventListener('click', () => {
+            setDirection(currentDirection === 'win2uni' ? 'uni2win' : 'win2uni');
+        });
+
+        // Conversion Logic
+        function performConversion() {
+            const input = txtInput.value;
+            if (!input.trim()) {
+                txtOutput.value = '';
+                previewContainer.innerHTML = '<em>(စာသား ရိုက်ထည့်ပါက ဖောင့်အစစ်ဖြင့် ပြသပေးပါမည်)</em>';
+                lblInputStats.textContent = 'စာလုံးရေ: 0 • စကားလုံး: 0';
+                lblOutputStats.textContent = 'စာလုံးရေ: 0 • အင်္ဂလိပ်စကားလုံး: 0';
+                lblEnglishCount.textContent = '0 ခု';
+                tokenPillsContainer.innerHTML = '<span style="font-size:0.825rem; color:#94a3b8;">အင်္ဂလိပ်စာလုံး မတွေ့ရှိသေးပါ</span>';
+                lastConversionResult = null;
+                return;
+            }
+
+            const options = {
+                detectEnglish: chkAutoEnglish.checked,
+                preserveEnglish: chkAutoEnglish.checked,
+                smartPunctuation: chkSmartPunctuation.checked,
+                numberMode: selNumberMode.value,
+                manualEnglish: manualOverrides.english,
+                manualMyanmar: manualOverrides.myanmar
+            };
+
+            if (currentDirection === 'win2uni') {
+                const res = MM_CONVERTER.winToUnicode(input, options);
+                lastConversionResult = res;
+                txtOutput.value = res.text;
+
+                // Live Preview
+                let previewHtml = '';
+                for (const tok of res.tokens) {
+                    if (tok.isEnglish) {
+                        previewHtml += `<span class="hl-eng" title="English">${escapeHtml(tok.converted)}</span>`;
+                    } else {
+                        previewHtml += `<span>${escapeHtml(tok.converted)}</span>`;
+                    }
+                }
+                previewContainer.innerHTML = previewHtml || escapeHtml(res.text);
+
+                // Stats
+                lblInputStats.textContent = `စာလုံးရေ: ${input.length} • စကားလုံး: ${input.trim().split(/\s+/).length}`;
+                lblOutputStats.textContent = `စာလုံးရေ: ${res.text.length} • အင်္ဂလိပ်စကားလုံး: ${res.stats.englishWords}`;
+
+                // Render Token Pills
+                renderTokenPills(res.tokens);
+
+            } else {
+                // Unicode -> Win Researcher
+                const res = MM_CONVERTER.unicodeToWin(input, options);
+                lastConversionResult = res;
+                txtOutput.value = res.plainText;
+
+                // Live preview:
+                // For Win Researcher, display Myanmar segments in Win Researcher and English in Inter
+                let previewHtml = '';
+                for (const seg of res.segments) {
+                    if (seg.type === 'myanmar') {
+                        const win = MM_CONVERTER.getConverter().convertFromUnicode(seg.text);
+                        previewHtml += `<span class="font-win-researcher" style="font-family:'Win Researcher', sans-serif;">${escapeHtml(win)}</span>`;
+                    } else {
+                        previewHtml += `<span class="hl-eng" style="font-family:'Inter', sans-serif;">${escapeHtml(seg.text)}</span>`;
+                    }
+                }
+                previewContainer.innerHTML = previewHtml;
+
+                // Stats
+                lblInputStats.textContent = `စာလုံးရေ: ${input.length} • စကားလုံး: ${input.trim().split(/\s+/).length}`;
+                lblOutputStats.textContent = `စာလုံးရေ: ${res.plainText.length} • အင်္ဂလိပ်အပိုင်း: ${res.stats.englishSegments}`;
+
+                // For uni2win, show english segments in pill list
+                renderUnicodeEnglishPills(res.segments);
+            }
+        }
+
+        function escapeHtml(text) {
+            return (text || '')
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        // Render English Pills for Win->Uni
+        function renderTokenPills(tokens) {
+            const englishTokens = tokens.filter(t => t.isEnglish);
+            lblEnglishCount.textContent = `${englishTokens.length} ခု`;
+
+            if (englishTokens.length === 0) {
+                tokenPillsContainer.innerHTML = '<span style="font-size:0.825rem; color:#94a3b8;">အင်္ဂလိပ်စာလုံး မတွေ့ရှိပါ</span>';
+                return;
+            }
+
+            tokenPillsContainer.innerHTML = '';
+            // Distinct list of words
+            const seen = new Set();
+            englishTokens.forEach(tok => {
+                const clean = tok.original.trim();
+                if (!clean || seen.has(clean.toLowerCase())) return;
+                seen.add(clean.toLowerCase());
+
+                const pill = document.createElement('span');
+                pill.className = 'token-pill is-english';
+                pill.title = 'နှိပ်ပါက မြန်မာစာအဖြစ် ပြောင်းလဲသတ်မှတ်ပါမည်';
+                pill.innerHTML = `
+                    <span>${escapeHtml(clean)}</span>
+                    <span class="pill-tag">ENG</span>
+                `;
+
+                pill.addEventListener('click', () => {
+                    if (manualOverrides.english.has(clean)) {
+                        manualOverrides.english.delete(clean);
+                        manualOverrides.myanmar.add(clean);
+                    } else {
+                        manualOverrides.myanmar.add(clean);
+                    }
+                    performConversion();
+                });
+
+                tokenPillsContainer.appendChild(pill);
+            });
+        }
+
+        function renderUnicodeEnglishPills(segments) {
+            const nonMm = segments.filter(s => s.type === 'non-myanmar' && s.text.trim().length > 0);
+            lblEnglishCount.textContent = `${nonMm.length} ပိုင်း`;
+
+            if (nonMm.length === 0) {
+                tokenPillsContainer.innerHTML = '<span style="font-size:0.825rem; color:#94a3b8;">အင်္ဂလိပ်စာလုံး မတွေ့ရှိပါ</span>';
+                return;
+            }
+
+            tokenPillsContainer.innerHTML = '';
+            nonMm.forEach(s => {
+                const words = s.text.trim().split(/\s+/);
+                words.forEach(w => {
+                    if (!w.trim()) return;
+                    const pill = document.createElement('span');
+                    pill.className = 'token-pill is-english';
+                    pill.innerHTML = `<span>${escapeHtml(w)}</span><span class="pill-tag">ENG</span>`;
+                    tokenPillsContainer.appendChild(pill);
+                });
+            });
+        }
+
+        // Event Listeners
+        txtInput.addEventListener('input', performConversion);
+        chkAutoEnglish.addEventListener('change', performConversion);
+        chkSmartPunctuation.addEventListener('change', performConversion);
+        selNumberMode.addEventListener('change', performConversion);
+
+        // Wrap with [en] tag
+        btnWrapTag.addEventListener('click', () => {
+            const start = txtInput.selectionStart;
+            const end = txtInput.selectionEnd;
+            const text = txtInput.value;
+
+            if (start !== end) {
+                const selected = text.substring(start, end);
+                const replacement = `[en]${selected}[/en]`;
+                txtInput.value = text.substring(0, start) + replacement + text.substring(end);
+                txtInput.setSelectionRange(start, start + replacement.length);
+            } else {
+                const tag = `[en]English_Word[/en]`;
+                txtInput.value = text.substring(0, start) + tag + text.substring(end);
+                txtInput.setSelectionRange(start + 4, start + 16);
+            }
+            txtInput.focus();
+            performConversion();
+        });
+
+        // Clear
+        btnClear.addEventListener('click', () => {
+            txtInput.value = '';
+            txtOutput.value = '';
+            manualOverrides.english.clear();
+            manualOverrides.myanmar.clear();
+            performConversion();
+            txtInput.focus();
+        });
+
+        // Paste
+        btnPaste.addEventListener('click', async () => {
+            try {
+                const text = await navigator.clipboard.readText();
+                txtInput.value = text;
+                performConversion();
+                showToast('ကလစ်ဘုတ်မှ စာသားကို ထည့်သွင်းပြီးပါပြီ!');
+            } catch (err) {
+                txtInput.focus();
+                showToast('ကျေးဇူးပြု၍ Ctrl + V ဖြင့် ကူးထည့်ပါ');
+            }
+        });
+
+        // Copy Plain Text
+        btnCopyText.addEventListener('click', () => {
+            if (!txtOutput.value) return;
+            navigator.clipboard.writeText(txtOutput.value).then(() => {
+                showToast('စာသားကို ကလစ်ဘုတ်သို့ ကူးယူပြီးပါပြီ!');
+            });
+        });
+
+        // Copy for Word (Rich HTML with separated fonts)
+        btnCopyWord.addEventListener('click', () => {
+            if (!txtOutput.value) return;
+
+            let htmlData = '';
+            if (currentDirection === 'win2uni') {
+                htmlData = `<div style="font-family:'Pyidaungsu', sans-serif; font-size:13pt;">${escapeHtml(txtOutput.value).replace(/\n/g, '<br>')}</div>`;
+            } else {
+                // Win Researcher + Times New Roman
+                if (lastConversionResult && lastConversionResult.htmlText) {
+                    htmlData = `<div style="font-size:13pt;">${lastConversionResult.htmlText.replace(/\n/g, '<br>')}</div>`;
+                } else {
+                    htmlData = `<div style="font-family:'Win Researcher', sans-serif; font-size:13pt;">${escapeHtml(txtOutput.value).replace(/\n/g, '<br>')}</div>`;
+                }
+            }
+
+            const blobHtml = new Blob([htmlData], { type: 'text/html' });
+            const blobText = new Blob([txtOutput.value], { type: 'text/plain' });
+            const item = new ClipboardItem({
+                'text/html': blobHtml,
+                'text/plain': blobText
+            });
+
+            navigator.clipboard.write([item]).then(() => {
+                showToast('Word ပုံစံဖြင့် ကူးယူပြီးပါပြီ (Word ထဲတွင် Paste ချနိုင်ပါသည်)!');
+            }).catch(() => {
+                navigator.clipboard.writeText(txtOutput.value);
+                showToast('ကလစ်ဘုတ်သို့ ကူးယူပြီးပါပြီ!');
+            });
+        });
+
+        // Download .txt
+        btnDownloadTxt.addEventListener('click', () => {
+            if (!txtOutput.value) return;
+            const filename = currentDirection === 'win2uni' ? 'Converted_Pyidaungsu_Unicode.txt' : 'Converted_WinResearcher.txt';
+            const blob = new Blob([txtOutput.value], { type: 'text/plain;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            a.click();
+            URL.revokeObjectURL(url);
+            showToast(`${filename} ဖိုင်ကို ဒေါင်းလုဒ်ဆွဲပြီးပါပြီ!`);
+        });
+
+        // Download .docx
+        btnDownloadDocx.addEventListener('click', async () => {
+            if (!txtOutput.value) return;
+            showToast('Word (.docx) ဖိုင် ထုတ်ယူနေပါသည်...');
+
+            try {
+                const response = await fetch('/api/convert-text-to-docx', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        text: txtInput.value,
+                        direction: currentDirection,
+                        options: {
+                            detectEnglish: chkAutoEnglish.checked,
+                            smartPunctuation: chkSmartPunctuation.checked,
+                            numberMode: selNumberMode.value
+                        }
+                    })
+                });
+
+                if (response.ok) {
+                    const blob = await response.blob();
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = currentDirection === 'win2uni' ? 'Converted_Pyidaungsu.docx' : 'Converted_WinResearcher.docx';
+                    a.click();
+                    URL.revokeObjectURL(url);
+                    showToast('Word (.docx) ဖိုင်ကို အောင်မြင်စွာ ဒေါင်းလုဒ်ဆွဲပြီးပါပြီ!');
+                    return;
+                }
+            } catch (e) {
+                // Server might not be running if opened directly as file://
+            }
+
+            // Fallback for standalone HTML: generate simple HTML doc
+            const htmlContent = `
+                <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
+                <head><meta charset='utf-8'><title>Document</title></head>
+                <body>${lastConversionResult && lastConversionResult.htmlText ? lastConversionResult.htmlText : txtOutput.value}</body>
+                </html>
+            `;
+            const blob = new Blob([htmlContent], { type: 'application/msword;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = currentDirection === 'win2uni' ? 'Converted_Pyidaungsu.doc' : 'Converted_WinResearcher.doc';
+            a.click();
+            URL.revokeObjectURL(url);
+            showToast('Word စာရွက်စာတမ်းကို ဒေါင်းလုဒ်ဆွဲပြီးပါပြီ!');
+        });
+
+        // Sample Button Handlers
+        document.getElementById('btnSampleMixed').addEventListener('click', () => {
+            setDirection('win2uni');
+            txtInput.value = SAMPLES.mixed_win;
+            performConversion();
+        });
+
+        document.getElementById('btnSampleWin').addEventListener('click', () => {
+            setDirection('win2uni');
+            txtInput.value = SAMPLES.win_pure;
+            performConversion();
+        });
+
+        document.getElementById('btnSampleUni').addEventListener('click', () => {
+            setDirection('uni2win');
+            txtInput.value = SAMPLES.uni_sample;
+            performConversion();
+        });
+
+        document.getElementById('btnSampleBenchmark').addEventListener('click', () => {
+            setDirection('uni2win');
+            txtInput.value = SAMPLES.benchmark_uni;
+            performConversion();
+        });
+
+        // File Drag & Drop Handlers
+        fileDropZone.addEventListener('click', () => fileInput.click());
+
+        fileDropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            fileDropZone.classList.add('dragover');
+        });
+
+        fileDropZone.addEventListener('dragleave', () => {
+            fileDropZone.classList.remove('dragover');
+        });
+
+        fileDropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            fileDropZone.classList.remove('dragover');
+            if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+                handleUploadedFile(e.dataTransfer.files[0]);
+            }
+        });
+
+        fileInput.addEventListener('change', () => {
+            if (fileInput.files && fileInput.files.length > 0) {
+                handleUploadedFile(fileInput.files[0]);
+            }
+        });
+
+        async function handleUploadedFile(file) {
+            const ext = file.name.split('.').pop().toLowerCase();
+            if (ext === 'txt') {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    txtInput.value = e.target.result;
+                    performConversion();
+                    showToast(`${file.name} ဖိုင်ကို ဖွင့်လိုက်ပါပြီ!`);
+                };
+                reader.readAsText(file);
+            } else if (ext === 'docx') {
+                showToast(`${file.name} ဖိုင်ကို ဆာဗာသို့ ပို့၍ ဖောင့်ပြောင်းလဲနေပါသည်...`);
+                const formData = new FormData();
+                formData.append('file', file);
+                formData.append('direction', currentDirection);
+                formData.append('detectEnglish', chkAutoEnglish.checked);
+                formData.append('smartPunctuation', chkSmartPunctuation.checked);
+                formData.append('numberMode', selNumberMode.value);
+
+                try {
+                    const response = await fetch('/api/convert-file', {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    if (response.ok) {
+                        const blob = await response.blob();
+                        const url = URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = `Converted_${file.name}`;
+                        a.click();
+                        URL.revokeObjectURL(url);
+                        showToast(`Word (.docx) ဖိုင်ကို အောင်မြင်စွာ ပြောင်းလဲပြီး ဒေါင်းလုဒ်လုပ်ပေးလိုက်ပါပြီ!`);
+                    } else {
+                        const err = await response.json();
+                        alert('Error: ' + (err.error || 'Failed to convert docx'));
+                    }
+                } catch (err) {
+                    alert('Word ဖိုင်ကို ပြောင်းရန် Flask ဆာဗာ (app.py) အား run ထားရန် လိုအပ်ပါသည်။ ကျေးဇူးပြု၍ start_converter.bat ကို ဖွင့်ပါ။');
+                }
+            } else {
+                alert('ကျေးဇူးပြု၍ .docx သို့မဟုတ် .txt ဖိုင်ကိုသာ ရွေးချယ်ပါ');
+            }
+        }
+
+        // Initialize with default sample
+        window.addEventListener('DOMContentLoaded', () => {
+            txtInput.value = SAMPLES.mixed_win;
+            performConversion();
+        });
+    </script>
+</body>
+</html>

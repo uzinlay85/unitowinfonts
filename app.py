@@ -86,7 +86,7 @@ def serve_fonts(filename):
 def api_convert_text():
     data = request.json or {}
     text = data.get('text', '')
-    direction = data.get('direction', 'win2uni')
+    direction = data.get('direction', 'uni2win')
     options = data.get('options', {})
 
     action = 'winToUni' if direction == 'win2uni' else 'uniToWin'
@@ -97,7 +97,7 @@ def api_convert_text():
 def api_convert_text_to_docx():
     data = request.json or {}
     text = data.get('text', '')
-    direction = data.get('direction', 'win2uni')
+    direction = data.get('direction', 'uni2win')
     options = data.get('options', {})
 
     lines = text.splitlines()
@@ -153,7 +153,7 @@ def api_convert_file():
         return jsonify({'error': 'No file uploaded'}), 400
 
     file = request.files['file']
-    direction = request.form.get('direction', 'win2uni')
+    direction = request.form.get('direction', 'uni2win')
     detect_english = request.form.get('detectEnglish', 'true').lower() == 'true'
     smart_punctuation = request.form.get('smartPunctuation', 'true').lower() == 'true'
     number_mode = request.form.get('numberMode', 'auto')

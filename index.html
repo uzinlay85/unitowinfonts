@@ -646,9 +646,9 @@
 
             <!-- Direction Switcher -->
             <div class="direction-switch-container">
-                <span id="badgeSource" class="font-badge active-source">Win Researcher</span>
+                <span id="badgeSource" class="font-badge active-source">Pyidaungsu (Unicode)</span>
                 <button id="btnSwapDirection" class="swap-btn" title="အပြန်အလှန် ပြောင်းလဲမည် (Swap Direction)">⇄</button>
-                <span id="badgeTarget" class="font-badge active-target">Pyidaungsu (Unicode)</span>
+                <span id="badgeTarget" class="font-badge active-target">Win Researcher</span>
             </div>
         </div>
     </header>
@@ -696,8 +696,8 @@
             <div class="editor-card">
                 <div class="card-header">
                     <div class="card-title-group">
-                        <span class="card-title" id="lblInputTitle">မူရင်းစာသား (Input)</span>
-                        <span class="font-type-pill pill-legacy" id="lblInputBadge">Win Researcher</span>
+                        <span class="card-title" id="lblInputTitle">Pyidaungsu ယူနီကုဒ် စာသား (Input)</span>
+                        <span class="font-type-pill pill-unicode" id="lblInputBadge">Pyidaungsu (Unicode)</span>
                     </div>
                     <div class="card-actions">
                         <button class="icon-btn" id="btnPaste" title="ကလစ်ဘုတ်မှ ကူးထည့်မည်">📋 Paste</button>
@@ -705,7 +705,7 @@
                     </div>
                 </div>
 
-                <textarea id="txtInput" class="editor-textarea font-win-researcher" placeholder="ဤနေရာတွင် Win Researcher ဖောင့်ဖြင့် ရေးထားသော စာသားကို ရိုက်ထည့်ပါ သို့မဟုတ် ကူးထည့်ပါ..."></textarea>
+                <textarea id="txtInput" class="editor-textarea font-pyidaungsu" placeholder="ဤနေရာတွင် Pyidaungsu ယူနီကုဒ်ဖြင့် ရေးထားသော စာသားကို ရိုက်ထည့်ပါ သို့မဟုတ် ကူးထည့်ပါ..."></textarea>
 
                 <div class="card-footer">
                     <span id="lblInputStats">စာလုံးရေ: 0 • စကားလုံး: 0</span>
@@ -717,8 +717,8 @@
             <div class="editor-card">
                 <div class="card-header">
                     <div class="card-title-group">
-                        <span class="card-title" id="lblOutputTitle">ပြောင်းလဲပြီး စာသား (Output)</span>
-                        <span class="font-type-pill pill-unicode" id="lblOutputBadge">Pyidaungsu (Unicode)</span>
+                        <span class="card-title" id="lblOutputTitle">Win Researcher ရလဒ် (Output)</span>
+                        <span class="font-type-pill pill-legacy" id="lblOutputBadge">Win Researcher</span>
                     </div>
                     <div class="card-actions">
                         <button class="btn-secondary" id="btnCopyWord" title="Microsoft Word ထဲတွင် အင်္ဂလိပ်စာနှင့် မြန်မာစာ ဖောင့်မပျက်ဘဲ ကပ်နိုင်စေရန် ကူးယူမည်">📄 Word ပုံစံ Copy</button>
@@ -726,7 +726,7 @@
                     </div>
                 </div>
 
-                <textarea id="txtOutput" class="editor-textarea font-pyidaungsu" readonly placeholder="ပြောင်းလဲပြီး ရလဒ် ဤနေရာတွင် ပေါ်လာပါမည်..."></textarea>
+                <textarea id="txtOutput" class="editor-textarea font-win-researcher" readonly placeholder="ပြောင်းလဲပြီး ရလဒ် ဤနေရာတွင် ပေါ်လာပါမည်..."></textarea>
 
                 <!-- Real Visual Preview using actual @font-face -->
                 <div class="preview-box">
@@ -739,7 +739,7 @@
                             <button class="btn-primary" id="btnCopyPreviewText" style="padding:0.35rem 0.8rem; font-size:0.8rem; font-weight:600; border-radius:6px; cursor:pointer;" title="စာသား သီးသန့် အမှန်ကူးယူမည်">📋 Copy စာသား</button>
                         </div>
                     </div>
-                    <div id="previewContainer" class="font-pyidaungsu" style="min-height: 50px;">
+                    <div id="previewContainer" class="font-win-researcher" style="min-height: 50px;">
                         <em>(စာသား ရိုက်ထည့်ပါက ဖောင့်အစစ်ဖြင့် ပြသပေးပါမည်)</em>
                     </div>
                 </div>
@@ -801,7 +801,7 @@
 
     <script>
         // State
-        let currentDirection = 'win2uni'; // 'win2uni' or 'uni2win'
+        let currentDirection = 'uni2win'; // 'uni2win' (default) or 'win2uni'
         let manualOverrides = {
             english: new Set(),
             myanmar: new Set()
@@ -882,9 +882,9 @@
                 previewContainer.className = 'font-pyidaungsu';
             } else {
                 badgeSource.textContent = 'Pyidaungsu (Unicode)';
-                badgeSource.className = 'font-badge active-target';
+                badgeSource.className = 'font-badge active-source';
                 badgeTarget.textContent = 'Win Researcher';
-                badgeTarget.className = 'font-badge active-source';
+                badgeTarget.className = 'font-badge active-target';
 
                 lblInputTitle.textContent = 'Pyidaungsu ယူနီကုဒ် စာသား (Input)';
                 lblInputBadge.textContent = 'Pyidaungsu (Unicode)';
@@ -1108,14 +1108,6 @@
             }
         });
 
-        // Copy Plain Text
-        btnCopyText.addEventListener('click', () => {
-            if (!txtOutput.value) return;
-            navigator.clipboard.writeText(txtOutput.value).then(() => {
-                showToast('စာသားကို ကလစ်ဘုတ်သို့ ကူးယူပြီးပါပြီ!');
-            });
-        });
-
         function preserveSpacesForWord(str) {
             if (!str) return '';
             // Convert tabs to 4 non-breaking spaces
@@ -1131,7 +1123,7 @@
 
             for (const line of lines) {
                 if (!line.trim()) {
-                    htmlLines.push('<p style="margin:0 0 4pt 0; font-size:13pt; line-height:1.5;">&nbsp;</p>');
+                    htmlLines.push('<p class="MsoNormal" style="margin:0 0 4pt 0; font-size:13pt; line-height:1.5;">&nbsp;</p>');
                     continue;
                 }
 
@@ -1143,12 +1135,12 @@
                         if (tok.isWhitespace) {
                             inner += preserveSpacesForWord(escapeHtml(tok.converted));
                         } else if (tok.isEnglish) {
-                            inner += `<span style="font-family:'Times New Roman', serif; font-size:12pt;">${preserveSpacesForWord(escapeHtml(tok.converted))}</span>`;
+                            inner += `<span class="eng-txt" style="font-family:'Times New Roman', serif; font-size:12pt; mso-ascii-font-family:'Times New Roman'; mso-hansi-font-family:'Times New Roman';">${preserveSpacesForWord(escapeHtml(tok.converted))}</span>`;
                         } else {
-                            inner += `<span style="font-family:'Pyidaungsu', 'Myanmar Text', sans-serif; font-size:13pt;">${preserveSpacesForWord(escapeHtml(tok.converted))}</span>`;
+                            inner += `<span class="uni-mm" style="font-family:'Pyidaungsu', 'Myanmar Text', sans-serif; font-size:13pt; mso-ascii-font-family:'Pyidaungsu'; mso-hansi-font-family:'Pyidaungsu'; mso-bidi-font-family:'Pyidaungsu';">${preserveSpacesForWord(escapeHtml(tok.converted))}</span>`;
                         }
                     }
-                    lineHtml = `<p style="margin:0 0 4pt 0; font-family:'Pyidaungsu', 'Myanmar Text', sans-serif; font-size:13pt; line-height:1.5; white-space:pre-wrap;">${inner || preserveSpacesForWord(escapeHtml(res.text))}</p>`;
+                    lineHtml = `<p class="MsoNormal" style="margin:0 0 4pt 0; font-family:'Pyidaungsu', 'Myanmar Text', sans-serif; font-size:13pt; line-height:1.5; white-space:pre-wrap; mso-ascii-font-family:'Pyidaungsu'; mso-hansi-font-family:'Pyidaungsu'; mso-bidi-font-family:'Pyidaungsu';">${inner || preserveSpacesForWord(escapeHtml(res.text))}</p>`;
                 } else {
                     // uni2win
                     const res = MM_CONVERTER.unicodeToWin(line, options);
@@ -1156,26 +1148,104 @@
                     for (const seg of res.segments) {
                         if (seg.type === 'myanmar') {
                             const win = seg.converted || MM_CONVERTER.getConverter().convertFromUnicode(seg.text);
-                            inner += `<span style="font-family:'Win Researcher', sans-serif; font-size:13pt; mso-ascii-font-family:'Win Researcher'; mso-hansi-font-family:'Win Researcher'; mso-no-proof:yes;">${preserveSpacesForWord(escapeHtml(win))}</span>`;
+                            inner += `<span class="win-mm" style="font-family:'Win Researcher', sans-serif; font-size:13pt; mso-ascii-font-family:'Win Researcher'; mso-hansi-font-family:'Win Researcher'; mso-bidi-font-family:'Win Researcher'; mso-fareast-font-family:'Win Researcher'; mso-no-proof:yes;">${preserveSpacesForWord(escapeHtml(win))}</span>`;
                         } else {
-                            inner += `<span style="font-family:'Times New Roman', serif; font-size:12pt; mso-ascii-font-family:'Times New Roman'; mso-hansi-font-family:'Times New Roman';">${preserveSpacesForWord(escapeHtml(seg.text))}</span>`;
+                            inner += `<span class="eng-txt" style="font-family:'Times New Roman', serif; font-size:12pt; mso-ascii-font-family:'Times New Roman'; mso-hansi-font-family:'Times New Roman';">${preserveSpacesForWord(escapeHtml(seg.text))}</span>`;
                         }
                     }
-                    lineHtml = `<p style="margin:0 0 4pt 0; line-height:1.5; font-size:13pt; white-space:pre-wrap;">${inner}</p>`;
+                    lineHtml = `<p class="MsoNormal" style="margin:0 0 4pt 0; line-height:1.5; font-size:13pt; white-space:pre-wrap; font-family:'Win Researcher', sans-serif; mso-ascii-font-family:'Win Researcher'; mso-hansi-font-family:'Win Researcher'; mso-bidi-font-family:'Win Researcher'; mso-fareast-font-family:'Win Researcher';">${inner}</p>`;
                 }
                 htmlLines.push(lineHtml);
             }
 
+            const isWin = (direction === 'uni2win');
+            const mainFont = isWin ? 'Win Researcher' : 'Pyidaungsu';
+
             return `<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
-<head><meta charset='utf-8'><title>Document</title></head>
-<body style="font-size:13pt; line-height:1.5;">
+<head>
+<meta charset='utf-8'>
+<title>Converted Myanmar Document</title>
+<!--[if gte mso 9]>
+<xml>
+<w:WordDocument>
+<w:View>Print</w:View>
+<w:Zoom>100</w:Zoom>
+<w:DoNotOptimizeForBrowser/>
+</w:WordDocument>
+</xml>
+<![endif]-->
+<style>
+<!--
+@font-face {
+    font-family: "Win Researcher";
+    panose-1: 0 0 0 0 0 0 0 0 0 0;
+    mso-font-charset: 0;
+    mso-generic-font-family: swiss;
+    mso-font-pitch: variable;
+    mso-font-signature: 3 0 0 0 1 0;
+}
+@font-face {
+    font-family: "Pyidaungsu";
+    panose-1: 2 11 5 2 4 2 4 2 2 3;
+    mso-font-charset: 0;
+    mso-generic-font-family: swiss;
+    mso-font-pitch: variable;
+    mso-font-signature: -1610612545 1073750107 0 0 415 0;
+}
+@font-face {
+    font-family: "Times New Roman";
+    panose-1: 2 2 6 3 5 4 5 2 3 4;
+    mso-font-charset: 0;
+    mso-generic-font-family: roman;
+    mso-font-pitch: variable;
+}
+p.MsoNormal, li.MsoNormal, div.MsoNormal {
+    mso-style-unhide: no;
+    mso-style-qformat: yes;
+    mso-style-parent: "";
+    margin: 0in;
+    margin-bottom: 4pt;
+    line-height: 1.5;
+    font-size: 13.0pt;
+    font-family: "${mainFont}", sans-serif;
+    mso-ascii-font-family: "${mainFont}";
+    mso-hansi-font-family: "${mainFont}";
+    mso-bidi-font-family: "${mainFont}";
+    mso-fareast-font-family: "${mainFont}";
+}
+span.win-mm {
+    font-family: "Win Researcher", sans-serif;
+    mso-ascii-font-family: "Win Researcher";
+    mso-hansi-font-family: "Win Researcher";
+    mso-bidi-font-family: "Win Researcher";
+    mso-fareast-font-family: "Win Researcher";
+    font-size: 13pt;
+    mso-no-proof: yes;
+}
+span.uni-mm {
+    font-family: "Pyidaungsu", "Myanmar Text", sans-serif;
+    mso-ascii-font-family: "Pyidaungsu";
+    mso-hansi-font-family: "Pyidaungsu";
+    mso-bidi-font-family: "Pyidaungsu";
+    font-size: 13pt;
+}
+span.eng-txt {
+    font-family: "Times New Roman", serif;
+    mso-ascii-font-family: "Times New Roman";
+    mso-hansi-font-family: "Times New Roman";
+    font-size: 12pt;
+}
+-->
+</style>
+</head>
+<body style="font-size:13pt; line-height:1.5; font-family:'${mainFont}', sans-serif;">
 ${htmlLines.join('\n')}
 </body>
 </html>`;
         }
 
-        // Copy for Word (Rich HTML with separated fonts and list formatting)
-        btnCopyWord.addEventListener('click', () => {
+        // Unified Copy Function (writes rich HTML with target font and plain text)
+        async function copyResultToClipboard(isWordSpecific = false) {
             if (!txtOutput.value) return;
 
             const options = {
@@ -1188,28 +1258,48 @@ ${htmlLines.join('\n')}
             };
 
             const htmlData = generateWordHtml(txtInput.value, currentDirection, options);
+            const plainText = txtOutput.value;
 
-            const blobHtml = new Blob([htmlData], { type: 'text/html' });
-            const blobText = new Blob([txtOutput.value], { type: 'text/plain' });
-            const item = new ClipboardItem({
-                'text/html': blobHtml,
-                'text/plain': blobText
-            });
+            try {
+                if (navigator.clipboard && window.ClipboardItem) {
+                    const blobHtml = new Blob([htmlData], { type: 'text/html' });
+                    const blobText = new Blob([plainText], { type: 'text/plain' });
+                    const item = new ClipboardItem({
+                        'text/html': blobHtml,
+                        'text/plain': blobText
+                    });
+                    await navigator.clipboard.write([item]);
+                    const targetFontName = (currentDirection === 'uni2win') ? 'Win Researcher' : 'Pyidaungsu';
+                    showToast(isWordSpecific
+                        ? `Word ပုံစံဖြင့် ကူးယူပြီးပါပြီ (Word တွင် ${targetFontName} ဖောင့်အတိုင်း တန်းပေါ်ပါမည်)!`
+                        : `ကူးယူပြီးပါပြီ (${targetFontName} ဖောင့်စနစ် ပါဝင်ပါသည်)!`);
+                    return;
+                }
+            } catch (err) {
+                console.warn('ClipboardItem rich write failed, falling back:', err);
+            }
 
-            navigator.clipboard.write([item]).then(() => {
-                showToast('Word ပုံစံဖြင့် ကူးယူပြီးပါပြီ (Word ထဲတွင် စာရင်းပုံစံမပျက် Paste ချနိုင်ပါသည်)!');
-            }).catch(() => {
-                navigator.clipboard.writeText(txtOutput.value);
-                showToast('ကလစ်ဘုတ်သို့ ကူးယူပြီးပါပြီ!');
-            });
-        });
+            // Fallback for browsers without ClipboardItem support
+            try {
+                await navigator.clipboard.writeText(plainText);
+                showToast('စာသားကို ကလစ်ဘုတ်သို့ ကူးယူပြီးပါပြီ!');
+            } catch (e) {
+                txtOutput.select();
+                document.execCommand('copy');
+                showToast('စာသားကို ကလစ်ဘုတ်သို့ ကူးယူပြီးပါပြီ!');
+            }
+        }
+
+        // Bind copy buttons
+        btnCopyWord.addEventListener('click', () => copyResultToClipboard(true));
+        btnCopyText.addEventListener('click', () => copyResultToClipboard(false));
 
         // Quick Copy buttons inside Real Font Preview
         if (btnCopyPreviewWord) {
-            btnCopyPreviewWord.addEventListener('click', () => btnCopyWord.click());
+            btnCopyPreviewWord.addEventListener('click', () => copyResultToClipboard(true));
         }
         if (btnCopyPreviewText) {
-            btnCopyPreviewText.addEventListener('click', () => btnCopyText.click());
+            btnCopyPreviewText.addEventListener('click', () => copyResultToClipboard(false));
         }
 
         // Download .txt
@@ -1391,9 +1481,10 @@ ${htmlLines.join('\n')}
             }
         }
 
-        // Initialize with default sample
+        // Initialize with default sample (Pyidaungsu Unicode -> Win Researcher)
         window.addEventListener('DOMContentLoaded', () => {
-            txtInput.value = SAMPLES.mixed_win;
+            setDirection('uni2win');
+            txtInput.value = SAMPLES.benchmark_uni;
             performConversion();
         });
     </script>

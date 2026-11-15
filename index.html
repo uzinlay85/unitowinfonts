@@ -586,6 +586,25 @@
             color: #0f172a;
         }
 
+        .btn-adobe {
+            background: #ea580c;
+            color: white;
+            border: none;
+            padding: 0.4rem 0.85rem;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            transition: all 0.15s ease;
+        }
+
+        .btn-adobe:hover {
+            background: #c2410c;
+        }
+
         /* Toast notification */
         .toast {
             position: fixed;
@@ -720,7 +739,8 @@
                         <span class="card-title" id="lblOutputTitle">Win Researcher ရလဒ် (Output)</span>
                         <span class="font-type-pill pill-legacy" id="lblOutputBadge">Win Researcher</span>
                     </div>
-                    <div class="card-actions">
+                    <div class="card-actions" style="display:flex; gap:0.4rem; flex-wrap:wrap;">
+                        <button class="btn-adobe" id="btnCopyAdobe" title="Adobe PageMaker, InDesign, Photoshop, Illustrator များထဲသို့ တိုက်ရိုက် Paste ချရန် ကူးယူမည် (Word ထဲ ထည့်ရန် မလိုပါ)">🎨 Adobe တိုက်ရိုက် Copy</button>
                         <button class="btn-secondary" id="btnCopyWord" title="Microsoft Word ထဲတွင် အင်္ဂလိပ်စာနှင့် မြန်မာစာ ဖောင့်မပျက်ဘဲ ကပ်နိုင်စေရန် ကူးယူမည်">📄 Word ပုံစံ Copy</button>
                         <button class="btn-primary" id="btnCopyText" title="စာသား သီးသန့် ကူးယူမည်">📋 Copy</button>
                     </div>
@@ -734,7 +754,8 @@
                         <div class="preview-label" style="margin-bottom:0;">
                             <span>👁️ အစစ်အမှန် ဖောင့်ပုံစံ အစမ်းမြင်ကွင်း (Real Font Preview)</span>
                         </div>
-                        <div style="display:flex; gap:0.4rem; align-items:center;">
+                        <div style="display:flex; gap:0.4rem; align-items:center; flex-wrap:wrap;">
+                            <button class="btn-adobe" id="btnCopyPreviewAdobe" style="padding:0.35rem 0.8rem; font-size:0.8rem; font-weight:600; background:#fff7ed; color:#c2410c; border:1px solid #fed7aa; border-radius:6px; cursor:pointer;" title="Adobe PageMaker, InDesign, Photoshop သို့ တိုက်ရိုက် Paste ချရန် ကူးယူမည် (Word မလိုပါ)">🎨 Adobe တိုက်ရိုက် Copy</button>
                             <button class="btn-secondary" id="btnCopyPreviewWord" style="padding:0.35rem 0.8rem; font-size:0.8rem; font-weight:600; background:#eff6ff; color:#1d4ed8; border:1px solid #bfdbfe; border-radius:6px; cursor:pointer;" title="Microsoft Word ထဲသို့ စာရင်းပုံစံမပျက် ကပ်နိုင်စေရန် Word ပုံစံဖြင့် ကူးယူမည်">📄 Word ပုံစံ Copy</button>
                             <button class="btn-primary" id="btnCopyPreviewText" style="padding:0.35rem 0.8rem; font-size:0.8rem; font-weight:600; border-radius:6px; cursor:pointer;" title="စာသား သီးသန့် အမှန်ကူးယူမည်">📋 Copy စာသား</button>
                         </div>
@@ -825,6 +846,8 @@
         const btnWrapTag = document.getElementById('btnWrapTag');
         const btnPaste = document.getElementById('btnPaste');
         const btnClear = document.getElementById('btnClear');
+        const btnCopyAdobe = document.getElementById('btnCopyAdobe');
+        const btnCopyPreviewAdobe = document.getElementById('btnCopyPreviewAdobe');
         const btnCopyText = document.getElementById('btnCopyText');
         const btnCopyWord = document.getElementById('btnCopyWord');
         const btnCopyPreviewWord = document.getElementById('btnCopyPreviewWord');
@@ -1244,8 +1267,59 @@ ${htmlLines.join('\n')}
 </html>`;
         }
 
-        // Unified Copy Function (writes rich HTML with target font and plain text)
-        async function copyResultToClipboard(isWordSpecific = false) {
+        // Copy directly for Adobe applications (PageMaker, InDesign, Photoshop, Illustrator)
+        // Uses clean plain text with Windows CRLF and straight ASCII quotes so 'ဒ' never corrupts
+        async function copyForAdobe() {
+            if (!txtOutput.value) return;
+            
+            // Format line breaks with CRLF for classic Win32 apps like PageMaker 7.0
+            let cleanText = txtOutput.value.replace(/\r?\n/g, '\r\n');
+            
+            // Ensure straight single quotes (ASCII 0x27) so Win Researcher 'ဒ' never corrupts into smart quotes
+            cleanText = cleanText.replace(/[\u2018\u2019]/g, "'").replace(/[\u201C\u201D]/g, '"');
+
+            try {
+                await navigator.clipboard.writeText(cleanText);
+                showToast('Adobe (PageMaker / InDesign / Photoshop) အတွက် တိုက်ရိုက် ကူးယူပြီးပါပြီ! (Word ထဲ ထည့်ရန် မလိုပါ)');
+                return;
+            } catch (err) {
+                console.warn('Clipboard writeText failed, using fallback:', err);
+            }
+
+            try {
+                const ta = document.createElement('textarea');
+                ta.value = cleanText;
+                ta.style.position = 'fixed';
+                ta.style.left = '-9999px';
+                document.body.appendChild(ta);
+                ta.select();
+                document.execCommand('copy');
+                document.body.removeChild(ta);
+                showToast('Adobe အတွက် တိုက်ရိုက် ကူးယူပြီးပါပြီ!');
+            } catch (e) {
+                txtOutput.select();
+                document.execCommand('copy');
+                showToast('စာသားကို ကလစ်ဘုတ်သို့ ကူးယူပြီးပါပြီ!');
+            }
+        }
+
+        // Copy Plain Text
+        async function copyPlainText() {
+            if (!txtOutput.value) return;
+            let cleanText = txtOutput.value.replace(/\r?\n/g, '\r\n');
+            cleanText = cleanText.replace(/[\u2018\u2019]/g, "'").replace(/[\u201C\u201D]/g, '"');
+            try {
+                await navigator.clipboard.writeText(cleanText);
+                showToast('စာသားကို ကလစ်ဘုတ်သို့ ကူးယူပြီးပါပြီ!');
+            } catch (e) {
+                txtOutput.select();
+                document.execCommand('copy');
+                showToast('စာသားကို ကလစ်ဘုတ်သို့ ကူးယူပြီးပါပြီ!');
+            }
+        }
+
+        // Copy specifically formatted for Microsoft Word (HTML with MSO font styles)
+        async function copyForWord() {
             if (!txtOutput.value) return;
 
             const options = {
@@ -1258,7 +1332,7 @@ ${htmlLines.join('\n')}
             };
 
             const htmlData = generateWordHtml(txtInput.value, currentDirection, options);
-            const plainText = txtOutput.value;
+            const plainText = txtOutput.value.replace(/\r?\n/g, '\r\n');
 
             try {
                 if (navigator.clipboard && window.ClipboardItem) {
@@ -1270,36 +1344,28 @@ ${htmlLines.join('\n')}
                     });
                     await navigator.clipboard.write([item]);
                     const targetFontName = (currentDirection === 'uni2win') ? 'Win Researcher' : 'Pyidaungsu';
-                    showToast(isWordSpecific
-                        ? `Word ပုံစံဖြင့် ကူးယူပြီးပါပြီ (Word တွင် ${targetFontName} ဖောင့်အတိုင်း တန်းပေါ်ပါမည်)!`
-                        : `ကူးယူပြီးပါပြီ (${targetFontName} ဖောင့်စနစ် ပါဝင်ပါသည်)!`);
+                    showToast(`Word ပုံစံဖြင့် ကူးယူပြီးပါပြီ (Word တွင် ${targetFontName} ဖောင့်အတိုင်း တန်းပေါ်ပါမည်)!`);
                     return;
                 }
             } catch (err) {
                 console.warn('ClipboardItem rich write failed, falling back:', err);
             }
 
-            // Fallback for browsers without ClipboardItem support
-            try {
-                await navigator.clipboard.writeText(plainText);
-                showToast('စာသားကို ကလစ်ဘုတ်သို့ ကူးယူပြီးပါပြီ!');
-            } catch (e) {
-                txtOutput.select();
-                document.execCommand('copy');
-                showToast('စာသားကို ကလစ်ဘုတ်သို့ ကူးယူပြီးပါပြီ!');
-            }
+            copyPlainText();
         }
 
         // Bind copy buttons
-        btnCopyWord.addEventListener('click', () => copyResultToClipboard(true));
-        btnCopyText.addEventListener('click', () => copyResultToClipboard(false));
+        if (btnCopyAdobe) btnCopyAdobe.addEventListener('click', copyForAdobe);
+        if (btnCopyPreviewAdobe) btnCopyPreviewAdobe.addEventListener('click', copyForAdobe);
+        btnCopyWord.addEventListener('click', copyForWord);
+        btnCopyText.addEventListener('click', copyPlainText);
 
         // Quick Copy buttons inside Real Font Preview
         if (btnCopyPreviewWord) {
-            btnCopyPreviewWord.addEventListener('click', () => copyResultToClipboard(true));
+            btnCopyPreviewWord.addEventListener('click', copyForWord);
         }
         if (btnCopyPreviewText) {
-            btnCopyPreviewText.addEventListener('click', () => copyResultToClipboard(false));
+            btnCopyPreviewText.addEventListener('click', copyPlainText);
         }
 
         // Download .txt

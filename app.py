@@ -21,7 +21,12 @@ def set_run_font(run, font_name):
         rPr.append(rFonts)
     rFonts.set(qn('w:ascii'), font_name)
     rFonts.set(qn('w:hAnsi'), font_name)
+    rFonts.set(qn('w:eastAsia'), font_name)
     rFonts.set(qn('w:cs'), font_name)
+    noProof = rPr.find(qn('w:noProof'))
+    if noProof is None:
+        noProof = OxmlElement('w:noProof')
+        rPr.append(noProof)
 
 def call_node_converter(action, texts, options=None):
     if options is None:

@@ -296,6 +296,22 @@ const MM_CONVERTER = (function() {
 
         let processedText = text || '';
 
+        // Strip invisible zero-width characters that break text segmentation
+        processedText = processedText.replace(/[\u200B\uFEFF]/g, '');
+
+        // Normalize any Zawgyi subjoined consonant characters (U+1060-U+107C, U+1085, U+1096)
+        // to proper Myanmar Unicode virama stacks so they convert accurately
+        const ZAWGYI_STACK_MAP = {
+            '\u1060': '\u1039\u1000', '\u1061': '\u1039\u1001', '\u1062': '\u1039\u1002', '\u1063': '\u1039\u1003',
+            '\u1065': '\u1039\u1005', '\u1066': '\u1039\u1006', '\u1067': '\u1039\u1006', '\u1068': '\u1039\u1007',
+            '\u1069': '\u1039\u1008', '\u106C': '\u1039\u100B', '\u106D': '\u1039\u100C', '\u1070': '\u1039\u100F',
+            '\u1071': '\u1039\u1010', '\u1072': '\u1039\u1010', '\u1073': '\u1039\u1011', '\u1074': '\u1039\u1011',
+            '\u1075': '\u1039\u1012', '\u1076': '\u1039\u1013', '\u1077': '\u1039\u1014', '\u1078': '\u1039\u1015',
+            '\u1079': '\u1039\u1016', '\u107A': '\u1039\u1017', '\u107B': '\u1039\u1018', '\u107C': '\u1039\u1019',
+            '\u1085': '\u1039\u101C', '\u1096': '\u1039\u1010\u103D'
+        };
+        processedText = processedText.replace(/[\u1060-\u107C\u1085\u1096]/g, m => ZAWGYI_STACK_MAP[m] || m);
+
         // Normalize commas and periods attached to Myanmar text so they become Myanmar punctuation
         // and do NOT convert to the Win consonant 'ယ'
         if (smartPunctuation) {
@@ -376,12 +392,10 @@ const MM_CONVERTER = (function() {
     }
 
     function escapeHtml(str) {
-        return str
+        return (str || '')
             .replace(/&/g, '&amp;')
             .replace(/</g, '&lt;')
-            .replace(/>/g, '&gt;')
-            .replace(/"/g, '&quot;')
-            .replace(/'/g, '&#039;');
+            .replace(/>/g, '&gt;');
     }
 
     return {

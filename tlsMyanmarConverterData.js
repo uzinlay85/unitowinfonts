@@ -341,7 +341,7 @@ tlsMyanmarConverterData["wininnwa"]=
 "ှ":"S",
 "ှ_small":"\u00A7",
 "ှု_lig":"I",
-"ှူ_lig":"\u00AA"
+"ှူ_lig":""
 },
 "eVowel":{
 "ေ":"a"

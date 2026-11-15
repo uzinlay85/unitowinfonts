@@ -700,8 +700,11 @@ TlsMyanmarConverter.prototype.fromUnicodeMapper = function(inputText, matchData)
     }
     if (syllable["hatoh"] && syllable["lVowel"] && !syllable["yapin"] && !syllable["yayit"])
     {
-        syllable["hatoh"] = this.data["hatoh"]["ှ" + unicodeSyllable["lVowel"] + "_lig"];
-        delete syllable["lVowel"];
+        var huuLig = this.data["hatoh"]["ှ" + unicodeSyllable["lVowel"] + "_lig"];
+        if (huuLig && huuLig.length > 0) {
+            syllable["hatoh"] = huuLig;
+            delete syllable["lVowel"];
+        }
     }
     if (syllable["uVowel"] && unicodeSyllable["uVowel"] == "ိ" &&
      syllable["anusvara"] && unicodeSyllable["anusvara"] == "ံ")
@@ -710,7 +713,7 @@ TlsMyanmarConverter.prototype.fromUnicodeMapper = function(inputText, matchData)
         delete syllable["anusvara"];
     }
     if (syllable["lVowel"] && (unicodeSyllable["yayit"] || unicodeSyllable["yapin"] ||
-     unicodeSyllable["wasway"] || unicodeSyllable["hatoh"] || unicodeSyllable["lig"] ||
+     unicodeSyllable["wasway"] || unicodeSyllable["lig"] ||
      unicodeSyllable["stack"] || unicodeSyllable["cons"] == "ဍ" || unicodeSyllable["cons"] == "ဋ" ||
      unicodeSyllable["cons"] == "ဌ" || unicodeSyllable["cons"] == "ဈ" ||
      unicodeSyllable["cons"] == "ဥ" || unicodeSyllable["cons"] == "ဠ"))

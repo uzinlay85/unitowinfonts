@@ -730,8 +730,14 @@
 
                 <!-- Real Visual Preview using actual @font-face -->
                 <div class="preview-box">
-                    <div class="preview-label">
-                        <span>👁️ အစစ်အမှန် ဖောင့်ပုံစံ အစမ်းမြင်ကွင်း (Real Font Preview)</span>
+                    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:0.75rem; flex-wrap:wrap; gap:0.5rem; border-bottom:1px solid #f1f5f9; padding-bottom:0.5rem;">
+                        <div class="preview-label" style="margin-bottom:0;">
+                            <span>👁️ အစစ်အမှန် ဖောင့်ပုံစံ အစမ်းမြင်ကွင်း (Real Font Preview)</span>
+                        </div>
+                        <div style="display:flex; gap:0.4rem; align-items:center;">
+                            <button class="btn-secondary" id="btnCopyPreviewWord" style="padding:0.35rem 0.8rem; font-size:0.8rem; font-weight:600; background:#eff6ff; color:#1d4ed8; border:1px solid #bfdbfe; border-radius:6px; cursor:pointer;" title="Microsoft Word ထဲသို့ စာရင်းပုံစံမပျက် ကပ်နိုင်စေရန် Word ပုံစံဖြင့် ကူးယူမည်">📄 Word ပုံစံ Copy</button>
+                            <button class="btn-primary" id="btnCopyPreviewText" style="padding:0.35rem 0.8rem; font-size:0.8rem; font-weight:600; border-radius:6px; cursor:pointer;" title="စာသား သီးသန့် အမှန်ကူးယူမည်">📋 Copy စာသား</button>
+                        </div>
                     </div>
                     <div id="previewContainer" class="font-pyidaungsu" style="min-height: 50px;">
                         <em>(စာသား ရိုက်ထည့်ပါက ဖောင့်အစစ်ဖြင့် ပြသပေးပါမည်)</em>
@@ -821,6 +827,8 @@
         const btnClear = document.getElementById('btnClear');
         const btnCopyText = document.getElementById('btnCopyText');
         const btnCopyWord = document.getElementById('btnCopyWord');
+        const btnCopyPreviewWord = document.getElementById('btnCopyPreviewWord');
+        const btnCopyPreviewText = document.getElementById('btnCopyPreviewText');
         const btnDownloadTxt = document.getElementById('btnDownloadTxt');
         const btnDownloadDocx = document.getElementById('btnDownloadDocx');
         const lblInputStats = document.getElementById('lblInputStats');
@@ -965,6 +973,8 @@
                     if (seg.type === 'myanmar') {
                         const win = seg.converted || MM_CONVERTER.getConverter().convertFromUnicode(seg.text);
                         previewHtml += `<span class="font-win-researcher" style="font-family:'Win Researcher', sans-serif;">${escapeHtml(win)}</span>`;
+                    } else if (/^\s+$/.test(seg.text)) {
+                        previewHtml += escapeHtml(seg.text);
                     } else {
                         previewHtml += `<span class="hl-eng" style="font-family:'Inter', sans-serif;">${escapeHtml(seg.text)}</span>`;
                     }
@@ -984,9 +994,7 @@
             return (text || '')
                 .replace(/&/g, '&amp;')
                 .replace(/</g, '&lt;')
-                .replace(/>/g, '&gt;')
-                .replace(/"/g, '&quot;')
-                .replace(/'/g, '&#039;');
+                .replace(/>/g, '&gt;');
         }
 
         // Render English Pills for Win->Uni
@@ -1148,9 +1156,9 @@
                     for (const seg of res.segments) {
                         if (seg.type === 'myanmar') {
                             const win = seg.converted || MM_CONVERTER.getConverter().convertFromUnicode(seg.text);
-                            inner += `<span style="font-family:'Win Researcher', sans-serif; font-size:13pt;">${preserveSpacesForWord(escapeHtml(win))}</span>`;
+                            inner += `<span style="font-family:'Win Researcher', sans-serif; font-size:13pt; mso-ascii-font-family:'Win Researcher'; mso-hansi-font-family:'Win Researcher'; mso-no-proof:yes;">${preserveSpacesForWord(escapeHtml(win))}</span>`;
                         } else {
-                            inner += `<span style="font-family:'Times New Roman', serif; font-size:12pt;">${preserveSpacesForWord(escapeHtml(seg.text))}</span>`;
+                            inner += `<span style="font-family:'Times New Roman', serif; font-size:12pt; mso-ascii-font-family:'Times New Roman'; mso-hansi-font-family:'Times New Roman';">${preserveSpacesForWord(escapeHtml(seg.text))}</span>`;
                         }
                     }
                     lineHtml = `<p style="margin:0 0 4pt 0; line-height:1.5; font-size:13pt; white-space:pre-wrap;">${inner}</p>`;
@@ -1195,6 +1203,14 @@ ${htmlLines.join('\n')}
                 showToast('ကလစ်ဘုတ်သို့ ကူးယူပြီးပါပြီ!');
             });
         });
+
+        // Quick Copy buttons inside Real Font Preview
+        if (btnCopyPreviewWord) {
+            btnCopyPreviewWord.addEventListener('click', () => btnCopyWord.click());
+        }
+        if (btnCopyPreviewText) {
+            btnCopyPreviewText.addEventListener('click', () => btnCopyText.click());
+        }
 
         // Download .txt
         btnDownloadTxt.addEventListener('click', () => {

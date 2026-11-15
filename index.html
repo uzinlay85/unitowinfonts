@@ -389,6 +389,12 @@
             line-height: 1.8;
             overflow-wrap: break-word;
             word-break: break-word;
+            white-space: pre-wrap;
+        }
+
+        #previewContainer {
+            white-space: pre-wrap;
+            word-break: break-word;
         }
 
         .preview-label {
@@ -929,7 +935,9 @@
                 // Live Preview
                 let previewHtml = '';
                 for (const tok of res.tokens) {
-                    if (tok.isEnglish) {
+                    if (tok.isWhitespace) {
+                        previewHtml += escapeHtml(tok.converted);
+                    } else if (tok.isEnglish) {
                         previewHtml += `<span class="hl-eng" title="English">${escapeHtml(tok.converted)}</span>`;
                     } else {
                         previewHtml += `<span>${escapeHtml(tok.converted)}</span>`;
@@ -955,7 +963,7 @@
                 let previewHtml = '';
                 for (const seg of res.segments) {
                     if (seg.type === 'myanmar') {
-                        const win = MM_CONVERTER.getConverter().convertFromUnicode(seg.text);
+                        const win = seg.converted || MM_CONVERTER.getConverter().convertFromUnicode(seg.text);
                         previewHtml += `<span class="font-win-researcher" style="font-family:'Win Researcher', sans-serif;">${escapeHtml(win)}</span>`;
                     } else {
                         previewHtml += `<span class="hl-eng" style="font-family:'Inter', sans-serif;">${escapeHtml(seg.text)}</span>`;
@@ -1100,21 +1108,78 @@
             });
         });
 
-        // Copy for Word (Rich HTML with separated fonts)
+        function preserveSpacesForWord(str) {
+            if (!str) return '';
+            // Convert tabs to 4 non-breaking spaces
+            str = str.replace(/\t/g, '&nbsp;&nbsp;&nbsp;&nbsp;');
+            // Convert runs of 2 or more spaces to &nbsp; so Word does not collapse table/list columns
+            str = str.replace(/ {2,}/g, (m) => '&nbsp;'.repeat(m.length));
+            return str;
+        }
+
+        function generateWordHtml(inputText, direction, options) {
+            const lines = (inputText || '').split(/\r?\n/);
+            const htmlLines = [];
+
+            for (const line of lines) {
+                if (!line.trim()) {
+                    htmlLines.push('<p style="margin:0 0 4pt 0; font-size:13pt; line-height:1.5;">&nbsp;</p>');
+                    continue;
+                }
+
+                let lineHtml = '';
+                if (direction === 'win2uni') {
+                    const res = MM_CONVERTER.winToUnicode(line, options);
+                    let inner = '';
+                    for (const tok of res.tokens) {
+                        if (tok.isWhitespace) {
+                            inner += preserveSpacesForWord(escapeHtml(tok.converted));
+                        } else if (tok.isEnglish) {
+                            inner += `<span style="font-family:'Times New Roman', serif; font-size:12pt;">${preserveSpacesForWord(escapeHtml(tok.converted))}</span>`;
+                        } else {
+                            inner += `<span style="font-family:'Pyidaungsu', 'Myanmar Text', sans-serif; font-size:13pt;">${preserveSpacesForWord(escapeHtml(tok.converted))}</span>`;
+                        }
+                    }
+                    lineHtml = `<p style="margin:0 0 4pt 0; font-family:'Pyidaungsu', 'Myanmar Text', sans-serif; font-size:13pt; line-height:1.5; white-space:pre-wrap;">${inner || preserveSpacesForWord(escapeHtml(res.text))}</p>`;
+                } else {
+                    // uni2win
+                    const res = MM_CONVERTER.unicodeToWin(line, options);
+                    let inner = '';
+                    for (const seg of res.segments) {
+                        if (seg.type === 'myanmar') {
+                            const win = seg.converted || MM_CONVERTER.getConverter().convertFromUnicode(seg.text);
+                            inner += `<span style="font-family:'Win Researcher', sans-serif; font-size:13pt;">${preserveSpacesForWord(escapeHtml(win))}</span>`;
+                        } else {
+                            inner += `<span style="font-family:'Times New Roman', serif; font-size:12pt;">${preserveSpacesForWord(escapeHtml(seg.text))}</span>`;
+                        }
+                    }
+                    lineHtml = `<p style="margin:0 0 4pt 0; line-height:1.5; font-size:13pt; white-space:pre-wrap;">${inner}</p>`;
+                }
+                htmlLines.push(lineHtml);
+            }
+
+            return `<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
+<head><meta charset='utf-8'><title>Document</title></head>
+<body style="font-size:13pt; line-height:1.5;">
+${htmlLines.join('\n')}
+</body>
+</html>`;
+        }
+
+        // Copy for Word (Rich HTML with separated fonts and list formatting)
         btnCopyWord.addEventListener('click', () => {
             if (!txtOutput.value) return;
 
-            let htmlData = '';
-            if (currentDirection === 'win2uni') {
-                htmlData = `<div style="font-family:'Pyidaungsu', sans-serif; font-size:13pt;">${escapeHtml(txtOutput.value).replace(/\n/g, '<br>')}</div>`;
-            } else {
-                // Win Researcher + Times New Roman
-                if (lastConversionResult && lastConversionResult.htmlText) {
-                    htmlData = `<div style="font-size:13pt;">${lastConversionResult.htmlText.replace(/\n/g, '<br>')}</div>`;
-                } else {
-                    htmlData = `<div style="font-family:'Win Researcher', sans-serif; font-size:13pt;">${escapeHtml(txtOutput.value).replace(/\n/g, '<br>')}</div>`;
-                }
-            }
+            const options = {
+                detectEnglish: chkAutoEnglish.checked,
+                preserveEnglish: chkAutoEnglish.checked,
+                smartPunctuation: chkSmartPunctuation.checked,
+                numberMode: selNumberMode.value,
+                manualEnglish: manualOverrides.english,
+                manualMyanmar: manualOverrides.myanmar
+            };
+
+            const htmlData = generateWordHtml(txtInput.value, currentDirection, options);
 
             const blobHtml = new Blob([htmlData], { type: 'text/html' });
             const blobText = new Blob([txtOutput.value], { type: 'text/plain' });
@@ -1124,7 +1189,7 @@
             });
 
             navigator.clipboard.write([item]).then(() => {
-                showToast('Word ပုံစံဖြင့် ကူးယူပြီးပါပြီ (Word ထဲတွင် Paste ချနိုင်ပါသည်)!');
+                showToast('Word ပုံစံဖြင့် ကူးယူပြီးပါပြီ (Word ထဲတွင် စာရင်းပုံစံမပျက် Paste ချနိုင်ပါသည်)!');
             }).catch(() => {
                 navigator.clipboard.writeText(txtOutput.value);
                 showToast('ကလစ်ဘုတ်သို့ ကူးယူပြီးပါပြီ!');
@@ -1181,12 +1246,11 @@
             }
 
             // Fallback for standalone HTML: generate simple HTML doc
-            const htmlContent = `
-                <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
-                <head><meta charset='utf-8'><title>Document</title></head>
-                <body>${lastConversionResult && lastConversionResult.htmlText ? lastConversionResult.htmlText : txtOutput.value}</body>
-                </html>
-            `;
+            const htmlContent = generateWordHtml(txtInput.value, currentDirection, {
+                detectEnglish: chkAutoEnglish.checked,
+                smartPunctuation: chkSmartPunctuation.checked,
+                numberMode: selNumberMode.value
+            });
             const blob = new Blob([htmlContent], { type: 'application/msword;charset=utf-8' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');

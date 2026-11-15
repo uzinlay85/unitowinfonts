@@ -95,32 +95,40 @@ def api_convert_text_to_docx():
     direction = data.get('direction', 'win2uni')
     options = data.get('options', {})
 
+    lines = text.splitlines()
+    if not lines:
+        lines = ['']
+
     action = 'winToUni' if direction == 'win2uni' else 'uniToWin'
-    results = call_node_converter(action, [text], options)
-    res = results[0]
+    results = call_node_converter(action, lines, options)
 
     doc = docx.Document()
     
     if direction == 'win2uni':
         # Result is Unicode
-        p = doc.add_paragraph()
-        run = p.add_run(res['text'])
-        set_run_font(run, 'Pyidaungsu')
-        run.font.size = Pt(13)
+        for res in results:
+            p = doc.add_paragraph()
+            p.paragraph_format.space_after = Pt(4)
+            p.paragraph_format.line_spacing = 1.15
+            run = p.add_run(res.get('text', ''))
+            set_run_font(run, 'Pyidaungsu')
+            run.font.size = Pt(13)
     else:
         # Result is Win Researcher
-        p = doc.add_paragraph()
-        segments = res.get('segments', [])
-        for seg in segments:
-            if seg['type'] == 'myanmar':
-                conv_text = call_node_converter('uniToWin', [seg['text']], options)[0]['plainText']
-                r = p.add_run(conv_text)
-                set_run_font(r, 'Win Researcher')
-                r.font.size = Pt(13)
-            else:
-                r = p.add_run(seg['text'])
-                set_run_font(r, 'Times New Roman')
-                r.font.size = Pt(12)
+        for res in results:
+            p = doc.add_paragraph()
+            p.paragraph_format.space_after = Pt(4)
+            p.paragraph_format.line_spacing = 1.15
+            segments = res.get('segments', [])
+            for seg in segments:
+                text_to_add = seg.get('converted', seg.get('text', ''))
+                r = p.add_run(text_to_add)
+                if seg['type'] == 'myanmar':
+                    set_run_font(r, 'Win Researcher')
+                    r.font.size = Pt(13)
+                else:
+                    set_run_font(r, 'Times New Roman')
+                    r.font.size = Pt(12)
 
     buf = io.BytesIO()
     doc.save(buf)

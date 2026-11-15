@@ -42,6 +42,7 @@ const MM_CONVERTER = (function() {
 
     // Characters exclusive to WinInnwa/Win Researcher or never present inside pure English words
     const WIN_CHARS = /[\u0080-\u00FF;&*_~>?'\"\u2018\u2019\u201C\u201D\/]/;
+    const WIN_CHARS_NO_SLASH = /[\u0080-\u00FF;&*_~>?'\"\u2018\u2019\u201C\u201D]/;
     
     // Standard Myanmar Unicode character range
     const MYANMAR_UNICODE_REGEX = /[\u1000-\u109F\uAA60-\uAA7F\uA9E0-\uA9FE]/;
@@ -89,11 +90,17 @@ const MM_CONVERTER = (function() {
         if (/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(token)) return true;
 
         // 2. Formatted numbers / codes: phone numbers, dates, version numbers, currency, comma-separated numbers
-        // e.g., 09-123456789, +959..., 12/04/2026, 10:30AM, $100, 50%, v1.2.0, 1990-2025, 10,000, 1,000,000
+        // e.g., 09-123456789, +959..., 12/04/2026, 10:30AM, $100, 50%, v1.2.0, 1990-2025, 10,000, 1,000,000, USD-2570/Rs-5000, USD/MMK
         if (/^[\+\$]?\d{1,3}(,\d{3})+(\.\d+)?%?$/.test(token)) return true;
         if (/^[\+\$]?\d+([-\/\.:]\d+)+%?$/i.test(token)) return true;
         if (/^\$\d+(\.\d+)?$/.test(token)) return true;
         if (/^\d+(\.\d+)?%$/.test(token)) return true;
+        if (/^[A-Za-z0-9\-_]+(\/[A-Za-z0-9\-_]+)+$/.test(token)) {
+            const parts = token.split('/');
+            if (parts.every(p => /^[A-Za-z0-9\-_]+$/.test(p) && !WIN_CHARS_NO_SLASH.test(p))) {
+                return true;
+            }
+        }
 
         // 3. If token contains any Win legacy extended characters or internal Win symbols, it's 100% Burmese!
         if (WIN_CHARS.test(token)) return false;
@@ -125,10 +132,17 @@ const MM_CONVERTER = (function() {
             'HTML', 'CSS', 'JS', 'API', 'SIM', 'WIFI', 'GB', 'MB', 'KB', 'TB',
             'TV', 'FM', 'AM', 'PM', 'VIP', 'CEO', 'CFO', 'CTO', 'MD', 'HR',
             'QC', 'QA', 'SOS', 'FAQ', 'NRC', 'ID', 'NO', 'PH', 'TEL', 'FAX',
-            'APP', 'SMS', 'OTP', 'ATM', 'POS', 'ISO', 'GMP', 'FDA', 'UNICEF'
+            'APP', 'SMS', 'OTP', 'ATM', 'POS', 'ISO', 'GMP', 'FDA', 'UNICEF',
+            'PMG', 'UPG', 'MPT', 'ATOM', 'OOREDOO', 'MYTEL', 'YCDC', 'MCDC',
+            'CBM', 'KMD', 'NCC', 'UMFCCI', 'MOGE', 'MEPE', 'MES', 'INGO', 'CSO',
+            'CBO', 'UNHCR', 'UNDP', 'UNODC', 'UNOPS', 'WFP', 'FAO', 'ILO', 'ASEAN', 'JICA', 'KOICA', 'USAID'
         ]);
         if (/^[A-Z0-9]{2,}$/.test(clean)) {
             if (COMMON_ACRONYMS.has(clean) || hasEnglishWord(clean.toLowerCase())) {
+                return true;
+            }
+            // If enclosed in parentheses/brackets e.g. (PMG), [UPG], it is an English acronym
+            if ((match[1].includes('(') && match[3].includes(')')) || (match[1].includes('[') && match[3].includes(']'))) {
                 return true;
             }
             return false;
@@ -198,6 +212,11 @@ const MM_CONVERTER = (function() {
             // Whitespace passes through unmodified
             if (/^\s+$/.test(rawToken)) {
                 result += rawToken;
+                tokenDetails.push({
+                    original: rawToken,
+                    converted: rawToken,
+                    isWhitespace: true
+                });
                 continue;
             }
 
@@ -329,11 +348,13 @@ const MM_CONVERTER = (function() {
                     // If Latin digits are explicitly desired, keep as is.
                 }
 
+                seg.converted = converted;
                 plainText += converted;
                 htmlText += `<span class="font-win" style="font-family:'Win Researcher', WinInnwa, sans-serif;">${escapeHtml(converted)}</span>`;
                 myanmarWordCount++;
             } else {
                 let englishContent = seg.text;
+                seg.converted = englishContent;
                 plainText += englishContent;
                 htmlText += `<span class="font-eng" style="font-family:'Times New Roman', 'Inter', sans-serif;">${escapeHtml(englishContent)}</span>`;
                 if (englishContent.trim().length > 0) {

@@ -1420,6 +1420,10 @@ ${htmlLines.join('\n')}
                                 const code = win.charCodeAt(i);
                                 if (c === '\\' || c === '{' || c === '}') {
                                     escaped += '\\' + c;
+                                } else if (c === "'") {
+                                    escaped += "\\'27"; // Protect ' (ဒ) from PageMaker Smart Quotes
+                                } else if (c === '"') {
+                                    escaped += "\\'22"; // Protect " (ဓ) from PageMaker Smart Quotes
                                 } else if (code >= 128) {
                                     escaped += `\\\'${code.toString(16)}`;
                                 } else {
@@ -1435,6 +1439,10 @@ ${htmlLines.join('\n')}
                                 const code = seg.text.charCodeAt(i);
                                 if (c === '\\' || c === '{' || c === '}') {
                                     escaped += '\\' + c;
+                                } else if (c === "'") {
+                                    escaped += "\\'27"; // Protect ' (ဒ) from PageMaker Smart Quotes
+                                } else if (c === '"') {
+                                    escaped += "\\'22"; // Protect " (ဓ) from PageMaker Smart Quotes
                                 } else if (code >= 128) {
                                     escaped += `\\\'${code.toString(16)}`;
                                 } else {
@@ -1474,7 +1482,7 @@ ${htmlLines.join('\n')}
                 a.download = filename;
                 a.click();
                 URL.revokeObjectURL(url);
-                showToast(`${filename} ဖိုင်ကို ဒေါင်းလုဒ်ဆွဲပြီးပါပြီ (PageMaker တွင် File -> Place ဖြင့် ထည့်ပါ)!`);
+                showToast(`${filename} ဖိုင်ကို ဒေါင်းလုဒ်ဆွဲပြီးပါပြီ (PageMaker တွင် Place ထည့်သည့်အခါ 'Convert quotes' အမှန်ခြစ် ဖြုတ်ထားပေးပါ)!`);
             });
         }
 

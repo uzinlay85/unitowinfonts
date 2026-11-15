@@ -767,7 +767,8 @@
 
                 <div class="card-footer">
                     <span id="lblOutputStats">စာလုံးရေ: 0 • အင်္ဂလိပ်စကားလုံး: 0</span>
-                    <div style="display:flex; gap:0.4rem;">
+                    <div style="display:flex; gap:0.4rem; flex-wrap:wrap;">
+                        <button class="btn-adobe" id="btnDownloadRtf" style="padding:0.25rem 0.6rem; font-size:0.75rem; background:#ea580c; color:white; border:none; border-radius:4px; font-weight:600; cursor:pointer;" title="Adobe PageMaker, InDesign များတွင် File -> Place ဖြင့် ထည့်သွင်းရန် ဖောင့်နှစ်မျိုးပါ RTF ဖိုင် ဒေါင်းလုဒ်ဆွဲမည်">📑 Adobe (.rtf) ဒေါင်းလုဒ်</button>
                         <button class="btn-secondary" id="btnDownloadTxt" style="padding:0.25rem 0.6rem; font-size:0.75rem;">💾 .txt သိမ်းမည်</button>
                         <button class="btn-secondary" id="btnDownloadDocx" style="padding:0.25rem 0.6rem; font-size:0.75rem;">📘 .docx သိမ်းမည်</button>
                     </div>
@@ -852,6 +853,7 @@
         const btnCopyWord = document.getElementById('btnCopyWord');
         const btnCopyPreviewWord = document.getElementById('btnCopyPreviewWord');
         const btnCopyPreviewText = document.getElementById('btnCopyPreviewText');
+        const btnDownloadRtf = document.getElementById('btnDownloadRtf');
         const btnDownloadTxt = document.getElementById('btnDownloadTxt');
         const btnDownloadDocx = document.getElementById('btnDownloadDocx');
         const lblInputStats = document.getElementById('lblInputStats');
@@ -1366,6 +1368,114 @@ ${htmlLines.join('\n')}
         }
         if (btnCopyPreviewText) {
             btnCopyPreviewText.addEventListener('click', copyPlainText);
+        }
+
+        // RTF Generator specifically for Adobe PageMaker & InDesign (preserves multiple fonts)
+        function generateRtf(inputText, direction, options = {}) {
+            const lines = (inputText || '').split(/\r?\n/);
+            const isWin = (direction === 'uni2win');
+            const mmFont = isWin ? 'Win Researcher' : 'Pyidaungsu';
+            const engFont = 'Times New Roman';
+
+            let rtf = `{\\rtf1\\ansi\\ansicpg1252\\deff0\\nouicompat{\\fonttbl{\\f0\\fnil\\fcharset0 ${mmFont};}{\\f1\\fnil\\fcharset0 ${engFont};}}\r\n`;
+            rtf += '{\\colortbl ;\\red0\\green0\\blue0;}\r\n';
+            rtf += '\\viewkind4\\uc1\r\n';
+
+            for (const line of lines) {
+                if (!line.trim()) {
+                    rtf += '\\pard\\sa80\\sl280\\slmult1 \\par\r\n';
+                    continue;
+                }
+
+                let lineRtf = '\\pard\\sa80\\sl280\\slmult1 ';
+                if (direction === 'win2uni') {
+                    const res = MM_CONVERTER.winToUnicode(line, options);
+                    for (const tok of res.tokens) {
+                        const fontIdx = tok.isEnglish ? 1 : 0;
+                        const fontSize = tok.isEnglish ? 24 : 26;
+                        let textVal = tok.converted;
+                        let escaped = '';
+                        for (let i = 0; i < textVal.length; i++) {
+                            const c = textVal[i];
+                            const code = textVal.charCodeAt(i);
+                            if (c === '\\' || c === '{' || c === '}') {
+                                escaped += '\\' + c;
+                            } else if (code >= 128) {
+                                escaped += `\\u${code}?`;
+                            } else {
+                                escaped += c;
+                            }
+                        }
+                        lineRtf += `{\\f${fontIdx}\\fs${fontSize} ${escaped}}`;
+                    }
+                } else {
+                    // uni2win
+                    const res = MM_CONVERTER.unicodeToWin(line, options);
+                    for (const seg of res.segments) {
+                        if (seg.type === 'myanmar') {
+                            const win = seg.converted || MM_CONVERTER.getConverter().convertFromUnicode(seg.text);
+                            let escaped = '';
+                            for (let i = 0; i < win.length; i++) {
+                                const c = win[i];
+                                const code = win.charCodeAt(i);
+                                if (c === '\\' || c === '{' || c === '}') {
+                                    escaped += '\\' + c;
+                                } else if (code >= 128) {
+                                    escaped += `\\\'${code.toString(16)}`;
+                                } else {
+                                    escaped += c;
+                                }
+                            }
+                            lineRtf += `{\\f0\\fs26 ${escaped}}`;
+                        } else {
+                            // English
+                            let escaped = '';
+                            for (let i = 0; i < seg.text.length; i++) {
+                                const c = seg.text[i];
+                                const code = seg.text.charCodeAt(i);
+                                if (c === '\\' || c === '{' || c === '}') {
+                                    escaped += '\\' + c;
+                                } else if (code >= 128) {
+                                    escaped += `\\\'${code.toString(16)}`;
+                                } else {
+                                    escaped += c;
+                                }
+                            }
+                            lineRtf += `{\\f1\\fs24 ${escaped}}`;
+                        }
+                    }
+                }
+                lineRtf += '\\par\r\n';
+                rtf += lineRtf;
+            }
+            rtf += '}\r\n';
+            return rtf;
+        }
+
+        // Download .rtf for PageMaker / InDesign
+        if (btnDownloadRtf) {
+            btnDownloadRtf.addEventListener('click', () => {
+                if (!txtOutput.value) return;
+                const options = {
+                    detectEnglish: chkAutoEnglish.checked,
+                    preserveEnglish: chkAutoEnglish.checked,
+                    smartPunctuation: chkSmartPunctuation.checked,
+                    numberMode: selNumberMode.value,
+                    manualEnglish: manualOverrides.english,
+                    manualMyanmar: manualOverrides.myanmar
+                };
+
+                const rtfContent = generateRtf(txtInput.value, currentDirection, options);
+                const filename = currentDirection === 'win2uni' ? 'Converted_Pyidaungsu.rtf' : 'Converted_WinResearcher.rtf';
+                const blob = new Blob([rtfContent], { type: 'application/rtf;charset=utf-8' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = filename;
+                a.click();
+                URL.revokeObjectURL(url);
+                showToast(`${filename} ဖိုင်ကို ဒေါင်းလုဒ်ဆွဲပြီးပါပြီ (PageMaker တွင် File -> Place ဖြင့် ထည့်ပါ)!`);
+            });
         }
 
         // Download .txt

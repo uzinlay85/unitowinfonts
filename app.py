@@ -41,6 +41,7 @@ def call_node_converter(action, texts, options=None):
     script = """
     const fs = require('fs');
     global.window = global;
+    try { global.KOTUN_CONVERTER = require('./kotun_engine.js'); } catch(e) {}
     eval(fs.readFileSync('tlsMyanmarConverter.js', 'utf8'));
     eval(fs.readFileSync('tlsMyanmarConverterData.js', 'utf8'));
     eval(fs.readFileSync('english_dict.js', 'utf8'));

@@ -15,6 +15,15 @@ if (typeof TlsDebug === 'undefined') {
     if (typeof global !== 'undefined') global.TlsDebug = TlsDebug;
 }
 
+// Try loading Ko Tun engine if in Node environment
+if (typeof require !== 'undefined' && typeof KOTUN_CONVERTER === 'undefined') {
+    try {
+        const _kotun = require('./kotun_engine.js');
+        if (typeof global !== 'undefined') global.KOTUN_CONVERTER = _kotun;
+        if (typeof window !== 'undefined') window.KOTUN_CONVERTER = _kotun;
+    } catch(e) {}
+}
+
 const MM_CONVERTER = (function() {
     let tlsConv = null;
     
@@ -184,8 +193,9 @@ const MM_CONVERTER = (function() {
      * Convert Win Researcher text to Pyidaungsu (Unicode)
      */
     function winToUnicode(text, options = {}) {
+        const kotunEngine = (typeof KOTUN_CONVERTER !== 'undefined') ? KOTUN_CONVERTER : ((typeof window !== 'undefined' && window.KOTUN_CONVERTER) ? window.KOTUN_CONVERTER : null);
         const conv = getConverter();
-        if (!conv) throw new Error("Converter engine not initialized!");
+        if (!conv && !kotunEngine) throw new Error("Converter engine not initialized!");
 
         const detectEnglish = options.detectEnglish !== false;
         const numberMode = options.numberMode || 'auto'; // 'auto', 'myanmar', 'latin'
@@ -254,8 +264,11 @@ const MM_CONVERTER = (function() {
                 });
                 englishWordCount++;
             } else {
-                // Convert via Win Researcher -> Unicode
-                let converted = conv.convertToUnicode(rawToken);
+                // Convert via Win Researcher -> Unicode (Using Ko Tun's proven engine if available)
+                const kotunEngine = (typeof KOTUN_CONVERTER !== 'undefined') ? KOTUN_CONVERTER : ((typeof window !== 'undefined' && window.KOTUN_CONVERTER) ? window.KOTUN_CONVERTER : null);
+                let converted = (kotunEngine && kotunEngine.winToUni)
+                    ? kotunEngine.winToUni(rawToken)
+                    : (conv ? conv.convertToUnicode(rawToken) : rawToken);
 
                 // Apply digit preferences for Myanmar text
                 if (numberMode === 'latin') {
@@ -287,8 +300,9 @@ const MM_CONVERTER = (function() {
      * Convert Pyidaungsu (Unicode) to Win Researcher
      */
     function unicodeToWin(text, options = {}) {
+        const kotunEngine = (typeof KOTUN_CONVERTER !== 'undefined') ? KOTUN_CONVERTER : ((typeof window !== 'undefined' && window.KOTUN_CONVERTER) ? window.KOTUN_CONVERTER : null);
         const conv = getConverter();
-        if (!conv) throw new Error("Converter engine not initialized!");
+        if (!conv && !kotunEngine) throw new Error("Converter engine not initialized!");
 
         const preserveEnglish = options.preserveEnglish !== false;
         const numberMode = options.numberMode || 'auto'; // 'auto', 'myanmar', 'latin'
@@ -357,7 +371,9 @@ const MM_CONVERTER = (function() {
 
         for (const seg of segments) {
             if (seg.type === 'myanmar') {
-                let converted = conv.convertFromUnicode(seg.text);
+                let converted = (kotunEngine && kotunEngine.uniToWinResearcher)
+                    ? kotunEngine.uniToWinResearcher(seg.text)
+                    : (conv ? conv.convertFromUnicode(seg.text) : seg.text);
 
                 if (numberMode === 'latin') {
                     // In WinInnwa, digits 0-9 are used for Burmese numbers.

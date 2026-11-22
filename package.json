@@ -1,0 +1,23 @@
+{
+  "name": "unitowinfonts",
+  "version": "1.1.0",
+  "description": "Unicode to Win / Zawgyi Font Converter Web Application with Smart English Preservation",
+  "main": "server.js",
+  "scripts": {
+    "build": "echo \"No build required - static web app ready\"",
+    "start": "node server.js"
+  },
+  "keywords": [
+    "myanmar",
+    "font-converter",
+    "unicode",
+    "win-researcher",
+    "win-innwa",
+    "zawgyi"
+  ],
+  "author": "uzinlay85",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
